@@ -18,7 +18,7 @@ var charmap = [
 	['&cent;',    '&#162;',  true, 'cent sign'],
 	['&euro;',    '&#8364;', true, 'euro sign'],
 	['&pound;',   '&#163;',  true, 'pound sign'],
-	['&yen;',     '&#165;',  false, 'yen sign'],
+	['&yen;',     '&#165;',  true, 'yen sign'],
 // signs
 	['&copy;',    '&#169;',  true, 'copyright sign'],
 	['&reg;',     '&#174;',  true, 'registered sign'],
@@ -270,7 +270,7 @@ var charmap = [
 	['&zwj;',     '&#8205;', false,'zero width joiner'],
 	['&lrm;',     '&#8206;', false,'left-to-right mark'],
 	['&rlm;',     '&#8207;', false,'right-to-left mark'],
-	['&shy;',     '&#173;',  true,'soft hyphen']
+	['&shy;',     '&#173;',  false,'soft hyphen']
 ];
 
 tinyMCEPopup.onInit.add(function() {
