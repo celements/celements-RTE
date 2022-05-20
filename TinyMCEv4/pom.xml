@@ -32,7 +32,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tinymce-base-v4</artifactId>
   <packaging>war</packaging>
-  <version>4.9.11-CEL5-SNAPSHOT</version>
+  <version>4.9.11-CEL5</version>
   <name>TinyMCE Base</name>
   <licenses>
     <license>
@@ -45,6 +45,7 @@
     <connection>scm:git:git://github.com/celements/celements-RTE</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-RTE.git</developerConnection>
     <url>https://github.com/celements/celements-RTE</url>
+    <tag>tinymce-base-v4-4.9.11-CEL5</tag>
   </scm>
   <dependencies>
     <!-- Add here all your dependencies -->
