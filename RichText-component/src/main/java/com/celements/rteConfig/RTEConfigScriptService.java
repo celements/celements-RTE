@@ -19,8 +19,10 @@
  */
 package com.celements.rteConfig;
 
+import static com.celements.common.test.CelementsTestUtils.*;
 import static com.google.common.base.MoreObjects.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ import com.celements.marshalling.Marshaller;
 import com.celements.rte.RteImplementation;
 import com.celements.sajson.JsonBuilder;
 import com.google.common.base.Strings;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.objects.BaseObject;
 
 @Component("rteconfig")
 public class RTEConfigScriptService implements ScriptService {
@@ -59,6 +63,9 @@ public class RTEConfigScriptService implements ScriptService {
 
   @Requirement
   private Map<String, RteConfigRole> rteConfigMap;
+
+  @Requirement
+  IRTEConfigTemplateRole rteConfigTemplateService;
 
   @Requirement
   private RteImplementation defaultRteImpl;
@@ -128,6 +135,20 @@ public class RTEConfigScriptService implements ScriptService {
   public RteImplementation getRteImplementation() {
     String rteImplHint = cfgSrc.getProperty("celements.rte.impl", "").toLowerCase();
     return rteImplMarshaller.resolve(rteImplHint).or(defaultRteImpl);
+  }
+
+  public List<com.xpn.xwiki.api.Object> getRTETemplateList() {
+    try {
+      List<BaseObject> rteTemplateList = rteConfigTemplateService.getRTETemplateList();
+      List<com.xpn.xwiki.api.Object> rteTemplateListExternal = new ArrayList<>();
+      for (BaseObject rteTmpl : rteTemplateList) {
+        rteTemplateListExternal.add(rteTmpl.newObjectApi(rteTmpl, getContext()));
+      }
+      return rteTemplateListExternal;
+    } catch (XWikiException exp) {
+      LOGGER.error("getRTETemplateList failed.", exp);
+    }
+    return Collections.emptyList();
   }
 
 }
