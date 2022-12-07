@@ -55,7 +55,4 @@
       <version>5.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  <build>
-    <finalName>tinymce-base</finalName>
-  </build>
 </project>
