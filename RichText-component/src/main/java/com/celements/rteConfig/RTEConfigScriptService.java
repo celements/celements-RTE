@@ -19,7 +19,6 @@
  */
 package com.celements.rteConfig;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static com.google.common.base.MoreObjects.*;
 
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import org.xwiki.script.service.ScriptService;
 import com.celements.emptycheck.internal.IDefaultEmptyDocStrategyRole;
 import com.celements.marshalling.ComponentMarshaller;
 import com.celements.marshalling.Marshaller;
+import com.celements.model.context.ModelContext;
 import com.celements.rte.RteImplementation;
 import com.celements.sajson.JsonBuilder;
 import com.google.common.base.Strings;
@@ -75,6 +75,9 @@ public class RTEConfigScriptService implements ScriptService {
 
   @Requirement
   private Execution execution;
+
+  @Requirement
+  private ModelContext context;
 
   @NotNull
   public String getRTEConfigField(@Nullable String name) {
@@ -142,7 +145,7 @@ public class RTEConfigScriptService implements ScriptService {
       List<BaseObject> rteTemplateList = rteConfigTemplateService.getRTETemplateList();
       List<com.xpn.xwiki.api.Object> rteTemplateListExternal = new ArrayList<>();
       for (BaseObject rteTmpl : rteTemplateList) {
-        rteTemplateListExternal.add(rteTmpl.newObjectApi(rteTmpl, getContext()));
+        rteTemplateListExternal.add(rteTmpl.newObjectApi(rteTmpl, context.getXWikiContext()));
       }
       return rteTemplateListExternal;
     } catch (XWikiException exp) {
