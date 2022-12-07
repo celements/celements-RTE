@@ -1,0 +1,9 @@
+com.celements.rteConfig.classes.RTEConfigClasses
+com.celements.rteConfig.classes.RTEConfigClassConfig
+com.celements.rteConfig.RTEConfigTemplateService
+com.celements.rteConfig.RTEConfigScriptService
+com.celements.rteConfig.RTEConfig
+com.celements.rte.RteDefaultImplementation
+com.celements.rte.RteTinyMce3
+com.celements.tinymce4.TinyMce4Config
+com.celements.tinymce4.RteTinyMce4
