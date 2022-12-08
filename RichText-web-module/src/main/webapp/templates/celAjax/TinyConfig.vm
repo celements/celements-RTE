@@ -1,0 +1,2 @@
+##delegate to celMacros/TinyConfig.vm to allow extending TinyConfig.vm
+#parse('celMacros/TinyConfig.vm')
