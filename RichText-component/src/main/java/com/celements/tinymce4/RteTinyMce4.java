@@ -41,7 +41,7 @@ public class RteTinyMce4 implements RteImplementation {
     return ImmutableList.of(
         ":celRTE/4.9.11/tinymce.min.js",
         ":celRTE/4.9.11/plugins/compat3x/plugin.min.js",
-        ":structEditJS/tinyMCE4/loadTinyMCE-async.js");
+        ":celRteJS/tinyMCE4/loadTinyMCE-async.js");
   }
 
 }
