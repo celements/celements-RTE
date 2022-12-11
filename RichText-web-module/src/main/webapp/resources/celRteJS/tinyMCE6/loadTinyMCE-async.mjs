@@ -28,17 +28,32 @@ import { CelFilePicker }
 class CelRteAdaptor {
   #uploadHandler;
   #filePicker;
-  #tinyConfigLoaded;
+  #tinyConfigPromise;
   #editorCounter;
   #editorInitPromises;
 
   constructor(options) {
-    this.#tinyConfigLoaded = false;
+    this.#tinyConfigPromise = this.initCelRTE6();
+    this.#tinyMceScriptPromise = this.addTinyMceScript();
+    Promise.all([this.#tinyConfigPromise, this.#tinyMceScriptPromise]).then((tinyConfigObj) => {
+      console.debug('initCelRTE6 then: tinymce.init');
+      tinymce.init(tinyConfigObj);
+      console.debug('initCelRTE6 then: tinymce.init finished');
+    });
     this.#editorCounter = 0;
     this.#editorInitPromises = [];
     this.#filePicker = new CelFilePicker(options);
     this.#uploadHandler = new CelUploadHandler(options.wiki_attach_path,
       options.wiki_imagedownload_path);
+  }
+
+  addTinyMceScript() {
+    return new Promise((resolve) => {
+      const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
+      jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/6.3.0/tinymce.min.js');
+      document.body.addEventListener('celements:jsFileLoaded', () => resolve());
+      document.body.appendChild(jsLazyLoadElem);
+    });
   }
 
   uploadImagesHandler(blobInfo, progress) {
@@ -105,23 +120,15 @@ class CelRteAdaptor {
   }
 
   lazyLoadTinyMCE(mceParentElem) {
-    let hasNewEditorsStarted = false;
-    try {
-      //TODO refactor in Promise for tinyConfigLoading
-      if (this.#tinyConfigLoaded) {
-        this.getUninitializedMceEditors(mceParentElem).forEach(editorAreaId => {
-          console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
-          tinymce.execCommand("mceAddEditor", false, editorAreaId);
-          hasNewEditorsStarted = true;
-        });
-        console.debug('lazyLoadTinyMCE: finish', mceParentElem);
-      } else {
-        console.warn('lazyLoadTinyMCE: skipped, tinyConfig not yet loaded', mceParentElem);
+    this.#tinyConfigPromise.then(() => {
+      for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
+        console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
+        tinymce.execCommand("mceAddEditor", false, editorAreaId);
       }
-    } catch (exp) {
+      console.debug('lazyLoadTinyMCE: finish', mceParentElem);
+    }).catch((exp) => {
       console.error("lazyLoadTinyMCE failed. ", exp);
-    }
-    return hasNewEditorsStarted;
+    });
   }
 
   async initCelRTE6() {
@@ -133,25 +140,18 @@ class CelRteAdaptor {
       params.append('template', decodeURIComponent(window.location.search.replace(templateRegEx, '$3')));
     }
     console.log('initCelRTE6: before Ajax tinymce');
-    try {
-        const response = await fetch('/ajax/tinymce/Tiny6Config', {
-          method: 'POST',
-          redirect: 'follow',
-          body: params
-        });
-        if (response.ok) {
-          const tinyConfigObj = await response.json() ?? {};
-          console.log('tinymce6 config loaded: starting tiny');
-          tinyConfigObj["setup"] = this.celSetupTinyMCE.bind(this);
-          console.debug('initCelRTE6: tinymce.init');
-          tinymce.init(tinyConfigObj);
-          this.#tinyConfigLoaded = true;
-          console.debug('initCelRTE6: tinymce.init finished');
-        } else {
-          throw new Error('fetch failed: ', response.statusText);
-        }
-    } catch (error) {
-      console.error('TinyConfig loading failed!', error);
+    const response = await fetch('/ajax/tinymce/Tiny6Config', {
+      method: 'POST',
+      redirect: 'follow',
+      body: params
+    });
+    if (response.ok) {
+      const tinyConfigObj = await response.json() ?? {};
+      console.log('tinymce6 config loaded: starting tiny');
+      tinyConfigObj["setup"] = this.celSetupTinyMCE.bind(this);
+      return tinyConfigObj;
+    } else {
+      throw new Error('fetch failed: ', response.statusText);
     }
   }
 /**
@@ -245,8 +245,3 @@ if (typeof window.getCelementsTabEditor === 'function') {
   //TODO refactor in a Promise for initTiny
   getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
 }
-
-const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
-jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/6.3.0/tinymce.min.js');
-document.body.addEventListener('celements:jsFileLoaded', initCelRTE6Bind);
-document.body.appendChild(jsLazyLoadElem);
