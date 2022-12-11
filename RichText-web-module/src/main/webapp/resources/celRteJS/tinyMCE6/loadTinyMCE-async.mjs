@@ -216,21 +216,25 @@ const celRteAdaptor = new CelRteAdaptor({
   "wiki_imagedownload_path" : "/download/Content_attachments/FileBaseDoc",
   "filebaseFN" : "Content_attachments.FileBaseDoc"
 });
-const initCelRTE6Bind = celRteAdaptor.initCelRTE6.bind(celRteAdaptor);
+//const initCelRTE6Bind = celRteAdaptor.initCelRTE6.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 
 /**
  * loading in struct layout editor
  **/
+//XXX structEdit:finishLoading still needed with MutationObserver???
+/**
 (function(structManager){
   console.log('loadTinyMCE async: start');
   if (structManager) {
     if (!structManager.isStartFinished()) {
       console.log('structEditorManager not initialized: register for finishLoading');
+  //TODO refactor in a Promise.all for initTiny and script load
       structManager.celStopObserving('structEdit:finishedLoading', initCelRTE6Bind);
       structManager.celObserve('structEdit:finishedLoading', initCelRTE6Bind);
     } else {
       console.log('structEditorManager already initialized calling celRteAdaptor.initCelRTE6');
+  //TODO refactor in a Promise.all for initTiny and script load
       celRteAdaptor.initCelRTE6();
     }
   } else {
@@ -238,10 +242,11 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
   }
   console.log('loadTinyMCE async: end');
 })(window.celStructEditorManager);
+**/
 
 if (typeof window.getCelementsTabEditor === 'function') {
   window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
     celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
-  //TODO refactor in a Promise for initTiny
-  getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
+  //XXX addAfterInitListener still needed with MutationObserver???
+  //getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
 }
