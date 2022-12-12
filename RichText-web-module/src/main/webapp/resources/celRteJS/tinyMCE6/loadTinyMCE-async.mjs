@@ -131,7 +131,7 @@ class CelRteAdaptor {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
         console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
-        if (!this.#mceEditorsToInit.get(editorAreaId)) {
+        if (!this.#mceEditorsToInit.includes(editorAreaId)) {
           this.#mceEditorsToInit.push(editorAreaId);
           tinymce.execCommand("mceAddEditor", false, editorAreaId);
         } else {
