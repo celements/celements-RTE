@@ -210,7 +210,7 @@ class TinyMceLazyInitializer {
     for (const mutation of mutationList) {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
-          console.debug('mutationHandler for node', newNode, typeof newNode);
+          console.debug('mutationHandler for node', newNode, newNode.nodeType);
           this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
         }
       }
@@ -254,6 +254,7 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 if (typeof window.getCelementsTabEditor === 'function') {
   window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
     celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
+  celRteAdaptor.lazyLoadTinyMCE(document.body);
   //XXX addAfterInitListener still needed with MutationObserver???
   //getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
 }
