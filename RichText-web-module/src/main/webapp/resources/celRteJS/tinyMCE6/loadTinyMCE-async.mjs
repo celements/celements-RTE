@@ -32,8 +32,10 @@ class CelRteAdaptor {
   #tinyMceScriptPromise;
   #editorCounter;
   #editorInitPromises;
+  #mceEditorsToInit;
 
   constructor(options) {
+    this.#mceEditorsToInit = [];
     this.#tinyConfigPromise = this.initCelRTE6();
     this.#tinyMceScriptPromise = this.addTinyMceScript();
     this.tinyReadyPromise().then((tinyConfigObj) => {
@@ -129,7 +131,12 @@ class CelRteAdaptor {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
         console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
-        tinymce.execCommand("mceAddEditor", false, editorAreaId);
+        if (!this.#mceEditorsToInit.get(editorAreaId)) {
+          this.#mceEditorsToInit.push(editorAreaId);
+          tinymce.execCommand("mceAddEditor", false, editorAreaId);
+        } else {
+          console.log('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
+        }
       }
       console.debug('lazyLoadTinyMCE: finish', mceParentElem);
     }).catch((exp) => {
