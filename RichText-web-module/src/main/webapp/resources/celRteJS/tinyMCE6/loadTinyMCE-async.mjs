@@ -29,13 +29,14 @@ class CelRteAdaptor {
   #uploadHandler;
   #filePicker;
   #tinyConfigPromise;
+  #tinyMceScriptPromise;
   #editorCounter;
   #editorInitPromises;
 
   constructor(options) {
     this.#tinyConfigPromise = this.initCelRTE6();
     this.#tinyMceScriptPromise = this.addTinyMceScript();
-    Promise.all([this.#tinyConfigPromise, this.#tinyMceScriptPromise]).then((tinyConfigObj) => {
+    this.tinyReadyPromise().then((tinyConfigObj) => {
       console.debug('initCelRTE6 then: tinymce.init');
       tinymce.init(tinyConfigObj);
       console.debug('initCelRTE6 then: tinymce.init finished');
@@ -45,6 +46,10 @@ class CelRteAdaptor {
     this.#filePicker = new CelFilePicker(options);
     this.#uploadHandler = new CelUploadHandler(options.wiki_attach_path,
       options.wiki_imagedownload_path);
+  }
+
+  tinyReadyPromise() {
+    return Promise.all([this.#tinyConfigPromise, this.#tinyMceScriptPromise]);
   }
 
   addTinyMceScript() {
