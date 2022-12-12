@@ -19,6 +19,7 @@
  */
 package com.celements.rteConfig;
 
+import static com.celements.common.MoreOptional.*;
 import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import com.celements.pagetype.service.IPageTypeResolverRole;
 import com.celements.pagetype.xobject.XObjectPageTypeUtilsRole;
 import com.celements.rteConfig.classes.IRTEConfigClassConfig;
 import com.celements.sajson.JsonBuilder;
+import com.celements.web.CelConstant;
 import com.celements.web.classcollections.IOldCoreClassConfig;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.Strings;
@@ -110,10 +112,8 @@ public class RTEConfig implements RteConfigRole {
 
     // Doc
     if (doc.isPresent()) {
-      resultConfig = getPreferenceFromConfigObject(name, doc.get());
-      if (Strings.isNullOrEmpty(resultConfig.trim())) {
-        resultConfig = getPreferenceFromPreferenceObject(name, getPropClassRef(), doc.get());
-      }
+      resultConfig = getPreference(name, doc.get())
+          .orElseGet(() -> getStringValue(name, getPropClassRef(), doc.get()));
     }
 
     // PageType
@@ -148,10 +148,8 @@ public class RTEConfig implements RteConfigRole {
     DocumentReference pageTypeDocRef = xobjectPageTypeUtils.getDocRefForPageType(pageTypeRef);
     try {
       XWikiDocument pageTypeDoc = modelAccess.getDocument(pageTypeDocRef);
-      resultConfig = getPreferenceFromConfigObject(name, pageTypeDoc);
-      if ("".equals(resultConfig.trim())) {
-        resultConfig = getPreferenceFromPreferenceObject(name, getPropClassRef(), pageTypeDoc);
-      }
+      resultConfig = getPreferenceWithCentralFallback(name, pageTypeDoc)
+          .orElseGet(() -> getStringValue(name, getPropClassRef(), pageTypeDoc));
     } catch (DocumentNotExistsException dneExp) {
       LOGGER.debug("Can't get RTEConfig because PageType doc does not exist. {}", pageTypeDocRef);
     }
@@ -162,11 +160,11 @@ public class RTEConfig implements RteConfigRole {
     String resultConfig = "";
     try {
       XWikiDocument prefDoc = modelAccess.getDocument(docRef);
-      resultConfig = getPreferenceFromConfigObject(name, prefDoc);
+      resultConfig = getPreference(name, prefDoc).orElse("");
       if (Strings.isNullOrEmpty(resultConfig.trim())) {
-        resultConfig = getPreferenceFromPreferenceObject(name, getPropClassRef(), prefDoc);
+        resultConfig = getStringValue(name, getPropClassRef(), prefDoc);
         if (Strings.isNullOrEmpty(resultConfig.trim())) {
-          resultConfig = getPreferenceFromPreferenceObject("rte_" + name,
+          resultConfig = getStringValue("rte_" + name,
               getXWikiPreferencesClassRef(), prefDoc);
         }
       }
@@ -177,23 +175,30 @@ public class RTEConfig implements RteConfigRole {
     return resultConfig;
   }
 
-  String getPreferenceFromConfigObject(String name, XWikiDocument doc) {
-    String configDocFN = getPreferenceFromPreferenceObject(CONFIG_PROP_NAME,
-        getRteConfigTypeClass(), doc);
-    if (!Strings.isNullOrEmpty(configDocFN.trim())) {
-      DocumentReference configDocRef = modelUtils.resolveRef(configDocFN, DocumentReference.class);
-      try {
-        XWikiDocument configDoc = modelAccess.getDocument(configDocRef);
-        return getPreferenceFromPreferenceObject(name, getPropClassRef(), configDoc);
-      } catch (DocumentNotExistsException e) {
-        LOGGER.info("config doc '{}' does not exist.", configDocFN);
-      }
+  private Optional<String> getPreferenceWithCentralFallback(String name, XWikiDocument doc) {
+    Optional<String> ret = getPreference(name, doc);
+    if (!ret.isPresent() && !CelConstant.CENTRAL_WIKI.equals(doc
+        .getDocumentReference().getWikiReference())) {
+      ret = getPreference(name, modelAccess.getOrCreateDocument(RefBuilder
+          .from(doc.getDocumentReference())
+          .with(CelConstant.CENTRAL_WIKI)
+          .build(DocumentReference.class)));
     }
-    return "";
+    return ret;
   }
 
-  String getPreferenceFromPreferenceObject(String name, DocumentReference classRef,
-      XWikiDocument doc) {
+  Optional<String> getPreference(String name, XWikiDocument doc) {
+    String value = "";
+    String configDocFN = getStringValue(CONFIG_PROP_NAME, getRteConfigTypeClass(), doc);
+    if (!Strings.isNullOrEmpty(configDocFN.trim())) {
+      XWikiDocument configDoc = modelAccess.getOrCreateDocument(modelUtils.resolveRef(
+          configDocFN, DocumentReference.class));
+      value = getStringValue(name, getPropClassRef(), configDoc);
+    }
+    return asNonBlank(value);
+  }
+
+  String getStringValue(String name, DocumentReference classRef, XWikiDocument doc) {
     BaseObject prefObj = doc.getXObject(classRef);
     if (prefObj != null) {
       return prefObj.getStringValue(name);

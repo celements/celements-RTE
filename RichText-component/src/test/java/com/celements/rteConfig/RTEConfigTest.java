@@ -34,6 +34,7 @@ import com.celements.model.reference.RefBuilder;
 import com.celements.pagetype.PageTypeReference;
 import com.celements.pagetype.service.IPageTypeResolverRole;
 import com.celements.rteConfig.classes.IRTEConfigClassConfig;
+import com.celements.web.CelConstant;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -49,8 +50,8 @@ public class RTEConfigTest extends AbstractComponentTest {
   private IModelAccessFacade modelAccessMock;
   private XWikiDocument curDoc;
   private IPageTypeResolverRole pageTypeResvMock;
-  private DocumentReference richTextPageTypeDocRef;
-  private XWikiDocument richTextPageTypeDoc;
+  private XWikiDocument pageTypeDoc;
+  private XWikiDocument pageTypeDocCentral;
 
   @Before
   public void setUp_RTEConfigTest() throws Exception {
@@ -64,26 +65,33 @@ public class RTEConfigTest extends AbstractComponentTest {
     PageTypeReference pageTypeRef = new PageTypeReference(RICH_TEXT_PT_NAME, "xobject",
         ImmutableList.of("pagetype"));
     expect(pageTypeResvMock.resolvePageTypeRefForCurrentDoc()).andReturn(pageTypeRef).anyTimes();
-    richTextPageTypeDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
-        "PageTypes").doc(RICH_TEXT_PT_NAME).build(DocumentReference.class);
-    richTextPageTypeDoc = new XWikiDocument(richTextPageTypeDocRef);
-    expect(modelAccessMock.getDocument(richTextPageTypeDocRef)).andReturn(
-        richTextPageTypeDoc).anyTimes();
-    expect(modelAccessMock.exists(eq(richTextPageTypeDocRef))).andReturn(true).anyTimes();
+    pageTypeDoc = new XWikiDocument(RefBuilder.create()
+        .wiki(getContext().getDatabase())
+        .space("PageTypes").doc(RICH_TEXT_PT_NAME)
+        .build(DocumentReference.class));
+    expect(modelAccessMock.getDocument(pageTypeDoc.getDocumentReference()))
+        .andReturn(pageTypeDoc).anyTimes();
+    pageTypeDocCentral = new XWikiDocument(RefBuilder
+        .from(pageTypeDoc.getDocumentReference())
+        .with(CelConstant.CENTRAL_WIKI)
+        .build(DocumentReference.class));
+    expect(modelAccessMock.getOrCreateDocument(pageTypeDocCentral.getDocumentReference()))
+        .andReturn(pageTypeDocCentral).anyTimes();
   }
 
   @Test
   public void test_getPropClassRef() {
     DocumentReference rtePropClassRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_SPACE).doc(
-            IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_DOC).build(DocumentReference.class);
+            IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_DOC)
+        .build(DocumentReference.class);
     replayDefault();
     assertEquals(rtePropClassRef, config.getPropClassRef());
     verifyDefault();
   }
 
   @Test
-  public void testGetRTEConfigField_page() throws Exception {
+  public void test_getRTEConfigField_page() throws Exception {
     String objValue = "style=test";
     BaseObject obj = new BaseObject();
     obj.setXClassReference(config.getPropClassRef());
@@ -96,7 +104,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_pageType() throws Exception {
+  public void test_getRTEConfigField_pageType() throws Exception {
     // Doc
     context.setDoc(curDoc);
     // PageType
@@ -104,14 +112,14 @@ public class RTEConfigTest extends AbstractComponentTest {
     BaseObject obj = new BaseObject();
     obj.setXClassReference(config.getPropClassRef());
     obj.setStringValue("styles", objValue);
-    richTextPageTypeDoc.addXObject(obj);
+    pageTypeDoc.addXObject(obj);
     replayDefault();
     assertEquals(objValue, config.getRTEConfigField("styles"));
     verifyDefault();
   }
 
   @Test
-  public void testGetRTEConfigField_webPreference_noPagetype_obj() throws Exception {
+  public void test_getRTEConfigField_webPreference_noPagetype_obj() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     // Doc
@@ -130,7 +138,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_webPreference_hasPagetype_obj() throws Exception {
+  public void test_getRTEConfigField_webPreference_hasPagetype_obj() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     // Doc
@@ -149,7 +157,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_webPreferenceObj() throws Exception {
+  public void test_getRTEConfigField_webPreferenceObj() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     // Doc
@@ -169,7 +177,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_xwikiPreference_obj() throws Exception {
+  public void test_getRTEConfigField_xwikiPreference_obj() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     DocumentReference xwikiPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
@@ -193,7 +201,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_xwikiPreferenceObj() throws Exception {
+  public void test_getRTEConfigField_xwikiPreferenceObj() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     DocumentReference xwikiPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
@@ -218,7 +226,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetRTEConfigField_null() throws Exception {
+  public void test_getRTEConfigField_null() throws Exception {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "TestSpace").doc("WebPreferences").build(DocumentReference.class);
     DocumentReference xwikiPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
@@ -239,7 +247,7 @@ public class RTEConfigTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetPreferenceFromConfigObject() throws Exception {
+  public void test_getPreference() throws Exception {
     String confDocName = "confdocname";
     DocumentReference confDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "RteConfSpace").doc(confDocName).build(DocumentReference.class);
@@ -254,21 +262,21 @@ public class RTEConfigTest extends AbstractComponentTest {
     confObj.setStringValue("testprop", "testvalue");
     XWikiDocument confDoc = new XWikiDocument(confDocRef);
     confDoc.addXObject(confObj);
-    expect(modelAccessMock.getDocument(eq(confDocRef))).andReturn(confDoc).once();
+    expect(modelAccessMock.getOrCreateDocument(eq(confDocRef))).andReturn(confDoc).once();
     replayDefault();
-    assertEquals("testvalue", config.getPreferenceFromConfigObject("testprop", curDoc));
+    assertEquals("testvalue", config.getPreference("testprop", curDoc).orElse(null));
     verifyDefault();
   }
 
   @Test
-  public void testGetPreferenceFromPreferenceObject_noObj() {
+  public void test_getStringValue_noObj() {
     DocumentReference classDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "Classes").doc("ClassName").build(DocumentReference.class);
-    assertEquals("", config.getPreferenceFromPreferenceObject("testprop", classDocRef, curDoc));
+    assertEquals("", config.getStringValue("testprop", classDocRef, curDoc));
   }
 
   @Test
-  public void testGetPreferenceFromPreferenceObject() {
+  public void test_getStringValue() {
     DocumentReference testPrefDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
         "Test").doc("WebPreferences").build(DocumentReference.class);
     DocumentReference classDocRef = new RefBuilder().wiki(getContext().getDatabase()).space(
@@ -278,7 +286,7 @@ public class RTEConfigTest extends AbstractComponentTest {
     obj.setStringValue("testprop", "testvalue");
     XWikiDocument prefDoc = new XWikiDocument(testPrefDocRef);
     prefDoc.addXObject(obj);
-    assertEquals("testvalue", config.getPreferenceFromPreferenceObject("testprop", classDocRef,
+    assertEquals("testvalue", config.getStringValue("testprop", classDocRef,
         prefDoc));
   }
 
