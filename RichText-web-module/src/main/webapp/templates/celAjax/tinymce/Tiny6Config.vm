@@ -127,17 +127,11 @@ $jsonBuilder.addProperty("selector", "textarea.tinyMCE,textarea.mceEditor")##
 $jsonBuilder.addProperty("language", "$!admin_language")##
 $jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
 $jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
-$jsonBuilder.addProperty("theme", "modern")##
 $jsonBuilder.addProperty("height", "$!tinyMCE_height")##
 $jsonBuilder.addProperty("width", "$!tinyMCE_width")##
 $jsonBuilder.addProperty("menubar", false)##
 $jsonBuilder.addProperty("branding", false)##
 $jsonBuilder.addProperty("plugins", "$!rtePlugins")##
-$jsonBuilder.openProperty("external_plugins")##
-$jsonBuilder.openDictionary()##
-$jsonBuilder.addProperty("celimage", $services.celementsweb.getSkinFile(':celRTE/4.9.11/plugins/celimage/editor_plugin_src.js', 'file'))##
-$jsonBuilder.addProperty("cellink", $services.celementsweb.getSkinFile(':celRTE/4.9.11/plugins/cellink/editor_plugin_src.js', 'file'))##
-$jsonBuilder.closeDictionary()## external plugins
 $jsonBuilder.openArray("toolbar")##
 #foreach($rteRowLayout in $rteRows)
   $jsonBuilder.addValue($rteRowLayout)
