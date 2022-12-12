@@ -169,8 +169,8 @@ class CelRteAdaptor {
     }
   }
 
-  initTinyMceV6(event) {
-    console.log('init TinyMCE v6 start ...', event.eventName, event);
+  initTinyMceV6() {
+    console.log('init TinyMCE v6 start ...');
     return new Promise((resolve) => {
       resolve({
         "selector" : "textarea.tinyMCE,textarea.mceEditor", "language" : "de",
