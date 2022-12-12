@@ -107,7 +107,7 @@ class CelRteAdaptor {
   }
 
   getUninitializedMceEditors(mceParentElem) {
-    console.log('getUninitializedMceEditors: start ', mceParentElem);
+    console.debug('getUninitializedMceEditors: start ', mceParentElem);
     const mceEditorsToInit = [];
     for (const editorArea of mceParentElem.querySelectorAll('textarea.mceEditor')) {
       if (!editorArea.id) {
@@ -120,12 +120,13 @@ class CelRteAdaptor {
         mceEditorsToInit.push(editorArea.id);
       }
     }
-    console.log('getUninitializedMceEditors: returns ', mceParentElem, mceEditorsToInit);
+    console.debug('getUninitializedMceEditors: returns ', mceParentElem, mceEditorsToInit);
     return mceEditorsToInit;
   }
 
   lazyLoadTinyMCE(mceParentElem) {
     this.#tinyConfigPromise.then(() => {
+      console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
         console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
         tinymce.execCommand("mceAddEditor", false, editorAreaId);
@@ -209,6 +210,7 @@ class TinyMceLazyInitializer {
     for (const mutation of mutationList) {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
+          console.debug('mutationHandler for node', newNode);
           this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
         }
       }
