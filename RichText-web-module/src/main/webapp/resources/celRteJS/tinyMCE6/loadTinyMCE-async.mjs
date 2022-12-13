@@ -28,22 +28,14 @@ import { CelFilePicker }
 class CelRteAdaptor {
   #uploadHandler;
   #filePicker;
-  #tinyConfigPromise;
-  #tinyMceScriptPromise;
+  #tinyReadyPromise;
   #editorCounter;
   #editorInitPromises;
   #mceEditorsToInit;
 
   constructor(options) {
     this.#mceEditorsToInit = [];
-    this.#tinyConfigPromise = this.initTinyMceV6();
-//    this.#tinyConfigPromise = this.initCelRTE6();
-    this.#tinyMceScriptPromise = this.addTinyMceScript();
-    this.tinyReadyPromise().then((tinyConfigObj) => {
-      console.debug('initCelRTE6 then: tinymce.init');
-      tinymce.init(tinyConfigObj);
-      console.debug('initCelRTE6 then: tinymce.init finished');
-    });
+    this.#tinyReadyPromise = this.#getTinyReadyPromise();
     this.#editorCounter = 0;
     this.#editorInitPromises = [];
     this.#filePicker = new CelFilePicker(options);
@@ -51,8 +43,14 @@ class CelRteAdaptor {
       options.wiki_imagedownload_path);
   }
 
-  tinyReadyPromise() {
-    return Promise.all([this.#tinyConfigPromise, this.#tinyMceScriptPromise]);
+  #getTinyReadyPromise() {
+//    this.#tinyConfigPromise = this.initCelRTE6();
+    return Promise.all([this.initTinyMceV6(), this.addTinyMceScript()]
+    ).then((tinyConfigObj) => {
+      console.debug('initCelRTE6 then: tinymce.init');
+      tinymce.init(tinyConfigObj);
+      console.debug('initCelRTE6 then: tinymce.init finished');
+    });
   }
 
   addTinyMceScript() {
@@ -128,7 +126,7 @@ class CelRteAdaptor {
   }
 
   lazyLoadTinyMCE(mceParentElem) {
-    this.tinyReadyPromise().then(() => {
+    this.#tinyReadyPromise.then(() => {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
         console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
