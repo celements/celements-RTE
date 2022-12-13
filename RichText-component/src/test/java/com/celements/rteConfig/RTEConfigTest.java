@@ -69,7 +69,7 @@ public class RTEConfigTest extends AbstractComponentTest {
         .wiki(getContext().getDatabase())
         .space("PageTypes").doc(RICH_TEXT_PT_NAME)
         .build(DocumentReference.class));
-    expect(modelAccessMock.getDocument(pageTypeDoc.getDocumentReference()))
+    expect(modelAccessMock.getOrCreateDocument(pageTypeDoc.getDocumentReference()))
         .andReturn(pageTypeDoc).anyTimes();
     pageTypeDocCentral = new XWikiDocument(RefBuilder
         .from(pageTypeDoc.getDocumentReference())
