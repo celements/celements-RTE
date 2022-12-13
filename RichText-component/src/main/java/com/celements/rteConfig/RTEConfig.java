@@ -144,17 +144,11 @@ public class RTEConfig implements RteConfigRole {
   }
 
   private String getRTEConfigFieldFromPageType(String name) {
-    String resultConfig = "";
     PageTypeReference pageTypeRef = pageTypeResolver.resolvePageTypeRefForCurrentDoc();
-    DocumentReference pageTypeDocRef = xobjectPageTypeUtils.getDocRefForPageType(pageTypeRef);
-    try {
-      XWikiDocument pageTypeDoc = modelAccess.getDocument(pageTypeDocRef);
-      resultConfig = getPreferenceWithCentralFallback(name, pageTypeDoc)
-          .orElseGet(() -> getStringValue(name, getPropClassRef(), pageTypeDoc));
-    } catch (DocumentNotExistsException dneExp) {
-      LOGGER.debug("Can't get RTEConfig because PageType doc does not exist. {}", pageTypeDocRef);
-    }
-    return resultConfig;
+    XWikiDocument pageTypeDoc = modelAccess.getOrCreateDocument(xobjectPageTypeUtils
+        .getDocRefForPageType(pageTypeRef));
+    return getPreferenceWithCentralFallback(name, pageTypeDoc)
+        .orElseGet(() -> getStringValue(name, getPropClassRef(), pageTypeDoc));
   }
 
   private String getRTEConfigFieldFromPreferenceDoc(String name, DocumentReference docRef) {
