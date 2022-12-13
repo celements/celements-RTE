@@ -20,6 +20,7 @@
 package com.celements.rteConfig;
 
 import static com.celements.common.MoreOptional.*;
+import static com.celements.logging.LogUtils.*;
 import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
@@ -195,6 +196,8 @@ public class RTEConfig implements RteConfigRole {
           configDocFN, DocumentReference.class));
       value = getStringValue(name, getPropClassRef(), configDoc);
     }
+    LOGGER.debug("getPreference - key [{}] on doc [{}] got [{}]",
+        name, defer(() -> modelUtils.serializeRef(doc.getDocumentReference())), value);
     return asNonBlank(value);
   }
 
