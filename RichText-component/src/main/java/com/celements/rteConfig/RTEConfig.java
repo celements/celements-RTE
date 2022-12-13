@@ -187,11 +187,11 @@ public class RTEConfig implements RteConfigRole {
     String configDocFN = getStringValue(CONFIG_PROP_NAME, getRteConfigTypeClass(), doc);
     if (!Strings.isNullOrEmpty(configDocFN.trim())) {
       XWikiDocument configDoc = modelAccess.getOrCreateDocument(modelUtils.resolveRef(
-          configDocFN, DocumentReference.class));
+          configDocFN, DocumentReference.class, doc.getDocumentReference()));
       value = getStringValue(name, getPropClassRef(), configDoc);
     }
-    LOGGER.debug("getPreference - key [{}] on doc [{}] got [{}]",
-        name, defer(() -> modelUtils.serializeRef(doc.getDocumentReference())), value);
+    LOGGER.debug("getPreference - key [{}] for [{}] on [{}] got [{}]", name,
+        defer(() -> modelUtils.serializeRef(doc.getDocumentReference())), configDocFN, value);
     return asNonBlank(value);
   }
 
