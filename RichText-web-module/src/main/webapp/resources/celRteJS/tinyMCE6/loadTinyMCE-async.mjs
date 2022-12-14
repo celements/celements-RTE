@@ -46,16 +46,19 @@ class CelRteAdaptor {
 
   async #getTinyReadyPromise() {
 //    this.#tinyConfigPromise = this.initCelRTE6();
-    await Promise.all([this.initTinyMceV6(), this.addTinyMceScript()]);
+    await Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
     console.debug('getTinyReadyPromise tinymce.init ', this.#tinyConfigObj);
     tinymce.init(this.#tinyConfigObj);
   }
 
-  addTinyMceScript() {
+  #addTinyMceScript() {
     return new Promise((resolve) => {
       const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
       jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/6.3.0/tinymce.min.js');
-      jsLazyLoadElem.addEventListener('celements:jsFileLoaded', () => resolve());
+      jsLazyLoadElem.addEventListener('celements:jsFileLoaded', () => {
+        resolve();
+        console.debug('addTinyMceScript: tinymce loaded');
+      });
       document.body.appendChild(jsLazyLoadElem);
       console.debug('addTinyMceScript: lazy load tinymce started');
     });
