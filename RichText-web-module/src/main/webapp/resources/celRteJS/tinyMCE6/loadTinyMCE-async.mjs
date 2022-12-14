@@ -46,24 +46,17 @@ class CelRteAdaptor {
   async #getTinyReadyPromise() {
 //    this.#tinyConfigPromise = this.initCelRTE6();
     const tinyConfigObj = await Promise.all([this.initTinyMceV6(), this.addTinyMceScript()]);
-    console.debug('initCelRTE6 then: tinymce.init');
+    console.debug('getTinyReadyPromise tinymce.init');
     tinymce.init(tinyConfigObj);
-    console.debug('initCelRTE6 then: tinymce.init finished');
   }
 
   addTinyMceScript() {
     return new Promise((resolve) => {
-      console.debug('addTinyMceScript: start');
       const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
       jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/6.3.0/tinymce.min.js');
-      jsLazyLoadElem.addEventListener('celements:jsFileLoaded', (ev) => {
-        console.debug('addTinyMceScript: resolve 1', ev);
-        console.debug('addTinyMceScript: resolve 2', tinymce);
-        resolve();
-        console.debug('addTinyMceScript: after resolve', tinymce);
-      });
+      jsLazyLoadElem.addEventListener('celements:jsFileLoaded', () => resolve());
       document.body.appendChild(jsLazyLoadElem);
-      console.debug('addTinyMceScript: end');
+      console.debug('addTinyMceScript: lazy load tinymce started');
     });
   }
 
@@ -137,7 +130,10 @@ class CelRteAdaptor {
         console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
         if (!this.#mceEditorsToInit.includes(editorAreaId)) {
           this.#mceEditorsToInit.push(editorAreaId);
-          tinymce.execCommand("mceAddEditor", false, editorAreaId);
+          tinymce.execCommand("mceAddEditor", false, {
+            'id' : editorAreaId,
+            'options' : {}
+          });
         } else {
           console.log('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
         }
@@ -156,7 +152,7 @@ class CelRteAdaptor {
     if (hrefSearch.match(templateRegEx)) {
       params.append('template', decodeURIComponent(window.location.search.replace(templateRegEx, '$3')));
     }
-    console.log('initCelRTE6: before Ajax tinymce');
+    console.log('initCelRTE6: before fetch tinymce');
     const response = await fetch('/ajax/tinymce/Tiny6Config', {
       method: 'POST',
       redirect: 'follow',
