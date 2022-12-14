@@ -44,11 +44,14 @@ class CelRteAdaptor {
       options.wiki_imagedownload_path);
   }
 
-  async #getTinyReadyPromise() {
+  #getTinyReadyPromise() {
 //    this.#tinyConfigPromise = this.initCelRTE6();
-    await Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
-    console.debug('getTinyReadyPromise tinymce.init ', this.#tinyConfigObj);
-    tinymce.init(this.#tinyConfigObj);
+    console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
+    const allPromise = Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
+    return allPromise.then(() => {
+      console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
+      tinymce.init(this.#tinyConfigObj);
+    });
   }
 
   #addTinyMceScript() {
