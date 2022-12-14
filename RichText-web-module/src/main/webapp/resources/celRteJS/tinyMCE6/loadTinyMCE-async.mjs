@@ -217,12 +217,11 @@ class TinyMceLazyInitializer {
   }
 
   mutationHandler(mutationList) {
-    console.debug('TinyMceLazyInitializer.mutationHandler: start mutationHandler');
     for (const mutation of mutationList) {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           if (newNode.nodeType === Node.ELEMENT_NODE) {
-            console.debug('mutationHandler for node', newNode, newNode.nodeType);
+            console.debug('mutationHandler for node', newNode);
             this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
           }
         }
