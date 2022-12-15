@@ -168,6 +168,8 @@ class CelRteAdaptor {
       this.#tinyConfigObj = await response.json() ?? {};
       console.log('tinymce6 config loaded: starting tiny');
       this.#tinyConfigObj["setup"] = this.celSetupTinyMCE.bind(this);
+      this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
+      this.#tinyConfigObj["file_picker_callback"] = this.celRte_file_picker_handler.bind(this);
     } else {
       throw new Error('fetch failed: ', response.statusText);
     }

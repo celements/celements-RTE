@@ -165,9 +165,10 @@ $jsonBuilder.addProperty("autoresize_bottom_margin", 1)##
 $jsonBuilder.addProperty("autoresize_min_height", 0)##
 $jsonBuilder.openProperty("style_formats")##
 $jsonBuilder.addValue($services.rteconfig.getRteJsonConfigField("style_formats"))##
+$jsonBuilder.addProperty("image_advtab", true)##
+$jsonBuilder.addProperty("automatic_uploads", true)##
 $jsonBuilder.closeDictionary()## tiny4 config dictionary
 $jsonBuilder.getJSON()
-##        image_advtab: true,
 ##        templates: [
 ##          { title: 'Test template 1', content: 'Test 1' },
 ##          { title: 'Test template 2', content: 'Test 2' }
