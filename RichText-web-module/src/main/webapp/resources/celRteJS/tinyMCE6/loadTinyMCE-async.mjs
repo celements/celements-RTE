@@ -46,7 +46,8 @@ class CelRteAdaptor {
 
   #getTinyReadyPromise() {
     console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
-    const allPromise = Promise.all([this.initCelRTE6(), this.#addTinyMceScript()]);
+//    const allPromise = Promise.all([this.initCelRTE6(), this.#addTinyMceScript()]);
+    const allPromise = Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
