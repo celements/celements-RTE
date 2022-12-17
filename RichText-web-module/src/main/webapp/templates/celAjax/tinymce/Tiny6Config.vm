@@ -167,6 +167,7 @@ $jsonBuilder.openProperty("style_formats")##
 $jsonBuilder.addValue($services.rteconfig.getRteJsonConfigField("style_formats"))##
 $jsonBuilder.addProperty("image_advtab", true)##
 $jsonBuilder.addProperty("automatic_uploads", true)##
+$jsonBuilder.addProperty("image_uploadtab", true)##
 $jsonBuilder.closeDictionary()## tiny4 config dictionary
 $jsonBuilder.getJSON()
 ##        templates: [
