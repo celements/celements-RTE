@@ -49,8 +49,8 @@ class CelRteAdaptor {
 //    const allPromise = Promise.all([this.initCelRTE6(), this.#addTinyMceScript()]);
     const allPromise = Promise.all([
       this.initTinyMceV6(),
-      this.#addTinyMceScript(),
-      this.#afterTabEditorLoadedPromise()]);
+      this.#addTinyMceScript()]);
+      //XXX this.#afterTabEditorLoadedPromise()
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
@@ -301,12 +301,10 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 **/
 
 if (typeof window.getCelementsTabEditor === 'function') {
-  console.log('TabEditor detected, prepar loading int TabEditor.');
+  console.log('TabEditor detected, prepare loading init TabEditor.');
   window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
     celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
-  console.warn('XXX debugging');
-  //XXX debugging
-//  celRteAdaptor.lazyLoadTinyMCE(document.body);
+  celRteAdaptor.lazyLoadTinyMCE(document.body);
   //XXX addAfterInitListener still needed with MutationObserver???
   //getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
 }
