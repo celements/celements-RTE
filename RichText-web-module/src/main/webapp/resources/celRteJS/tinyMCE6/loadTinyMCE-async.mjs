@@ -60,6 +60,9 @@ class CelRteAdaptor {
 
   #afterTabEditorLoaded() {
     return new Promise((resolve) => {
+      const celTabMenuDivs = document.querySelectorAll('.celements3_tabMenu');
+      console.log('afterTabEditorLoaded: celements3_tabMenu ', celTabMenuDivs.length,
+        window.getCelementsTabEditor);
       window.getCelementsTabEditor().addAfterInitListener(() => {
         resolve();
         console.debug('afterTabEditorLoaded resolved.');
