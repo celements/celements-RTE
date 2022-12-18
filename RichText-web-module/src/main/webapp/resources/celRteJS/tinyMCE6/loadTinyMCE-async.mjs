@@ -49,8 +49,8 @@ class CelRteAdaptor {
 //    const allPromise = Promise.all([this.initCelRTE6(), this.#addTinyMceScript()]);
     const allPromise = Promise.all([
       this.initTinyMceV6(),
-      this.#addTinyMceScript()]);
-      //XXX this.#afterTabEditorLoadedPromise()
+      this.#addTinyMceScript(),
+      this.#afterTabEditorLoadedPromise()]);
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
@@ -63,20 +63,29 @@ class CelRteAdaptor {
     return celTabMenuDivs.length > 0;
   }
 
+  afterTabEditorInitializedPromise() {
+    if (this.isInTabEditor()) {
+      return new Promise((resolve) => {
+        if (typeof window.getCelementsTabEditor === 'function') {
+          resolve();
+        } else {
+          document.addEventListener('load', () => resolve());
+        }
+      });
+    } else {
+      return Promise.reject();
+    }
+  }
+
   #afterTabEditorLoadedPromise() {
     if (this.isInTabEditor()) {
       return new Promise((resolve) => {
-        console.log('afterTagEditorLoaded: ', window.getCelementsTabEditor, document.readyState);
-        const addAfterInitListener = () => window.getCelementsTabEditor().addAfterInitListener(
-          () => {
+        this.afterTabEditorInitializedPromise().then(() => {
+          window.getCelementsTabEditor().addAfterInitListener(() => {
             resolve();
             console.debug('afterTabEditorLoadedPromise resolved.');
+          });
         });
-        if (typeof window.getCelementsTabEditor === 'function') {
-          addAfterInitListener();
-        } else {
-          document.addEventListener('load', () => addAfterInitListener());
-        }
       });
     } else {
       return Promise.resolve();
@@ -298,11 +307,8 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 })(window.celStructEditorManager);
 **/
 
-if (typeof window.getCelementsTabEditor === 'function') {
+celRteAdaptor.afterTabEditorInitializedPromise().then(() => {
   console.log('TabEditor detected, prepare loading init TabEditor.');
   window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
     celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
-  celRteAdaptor.lazyLoadTinyMCE(document.body);
-  //XXX addAfterInitListener still needed with MutationObserver???
-  //getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
-}
+});
