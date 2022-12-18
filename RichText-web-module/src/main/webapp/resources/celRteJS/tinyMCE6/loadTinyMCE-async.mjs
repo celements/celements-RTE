@@ -51,6 +51,7 @@ class CelRteAdaptor {
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
+      console.debug('getTinyReadyPromise tinymce.init done.');
     });
   }
 
@@ -134,15 +135,15 @@ class CelRteAdaptor {
     this.#tinyReadyPromise.then(() => {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
-        console.debug('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
         if (!this.#mceEditorsToInit.includes(editorAreaId)) {
           this.#mceEditorsToInit.push(editorAreaId);
+          console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
           tinymce.execCommand("mceAddEditor", false, {
             'id' : editorAreaId,
             'options' : this.#tinyConfigObj
           });
         } else {
-          console.log('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
+          console.debug('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
         }
       }
       console.debug('lazyLoadTinyMCE: finish', mceParentElem);
