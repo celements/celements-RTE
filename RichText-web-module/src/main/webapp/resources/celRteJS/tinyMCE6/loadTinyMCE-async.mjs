@@ -50,7 +50,7 @@ class CelRteAdaptor {
     const allPromise = Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
-      tinymce.init();
+      tinymce.init(this.#tinyConfigObj);
     });
   }
 
@@ -139,9 +139,8 @@ class CelRteAdaptor {
           this.#mceEditorsToInit.push(editorAreaId);
           tinymce.execCommand("mceAddEditor", false, {
             'id' : editorAreaId,
-            'options' : {}
+            'options' : this.#tinyConfigObj
           });
-          //TODO load in options this.#tinyConfigObj
         } else {
           console.log('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
         }
