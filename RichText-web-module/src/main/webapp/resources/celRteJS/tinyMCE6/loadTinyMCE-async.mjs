@@ -229,7 +229,6 @@ class TinyMceLazyInitializer {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           if (newNode.nodeType === Node.ELEMENT_NODE) {
-            console.debug('mutationHandler for node', newNode);
             this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
           }
         }
