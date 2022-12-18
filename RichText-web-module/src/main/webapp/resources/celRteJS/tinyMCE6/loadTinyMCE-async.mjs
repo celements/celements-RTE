@@ -58,16 +58,25 @@ class CelRteAdaptor {
     });
   }
 
+  isInTabEditor() {
+    const celTabMenuDivs = document.querySelectorAll('.celements3_tabMenu');
+    return celTabMenuDivs.length > 0;
+  }
+
   #afterTabEditorLoaded() {
-    return new Promise((resolve) => {
-      const celTabMenuDivs = document.querySelectorAll('.celements3_tabMenu');
-      console.log('afterTabEditorLoaded: celements3_tabMenu ', celTabMenuDivs.length,
-        window.getCelementsTabEditor);
-      window.getCelementsTabEditor().addAfterInitListener(() => {
-        resolve();
-        console.debug('afterTabEditorLoaded resolved.');
+    if (this.isInTabEditor()) {
+      return new Promise((resolve) => {
+        console.log('afterTagEditorLoaded: ', window.getCelementsTabEditor, document.readyState);
+        if (typeof window.getCelementsTabEditor === 'function') {
+          window.getCelementsTabEditor().addAfterInitListener(() => {
+            resolve();
+            console.debug('afterTabEditorLoaded resolved.');
+          });
+        }
       });
-    });
+    } else {
+      return Promise.resolve();
+    }
   }
 
   #addTinyMceScript() {
