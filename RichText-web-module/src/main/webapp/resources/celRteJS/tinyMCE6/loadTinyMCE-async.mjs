@@ -50,7 +50,7 @@ class CelRteAdaptor {
     const allPromise = Promise.all([
       this.initTinyMceV6(),
       this.#addTinyMceScript(),
-      this.#afterTabEditorLoaded()]);
+      this.#afterTabEditorLoadedPromise()]);
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
@@ -63,15 +63,19 @@ class CelRteAdaptor {
     return celTabMenuDivs.length > 0;
   }
 
-  #afterTabEditorLoaded() {
+  #afterTabEditorLoadedPromise() {
     if (this.isInTabEditor()) {
       return new Promise((resolve) => {
         console.log('afterTagEditorLoaded: ', window.getCelementsTabEditor, document.readyState);
-        if (typeof window.getCelementsTabEditor === 'function') {
-          window.getCelementsTabEditor().addAfterInitListener(() => {
+        const addAfterInitListener = () => window.getCelementsTabEditor().addAfterInitListener(
+          () => {
             resolve();
-            console.debug('afterTabEditorLoaded resolved.');
-          });
+            console.debug('afterTabEditorLoadedPromise resolved.');
+        });
+        if (typeof window.getCelementsTabEditor === 'function') {
+          addAfterInitListener();
+        } else {
+          document.addEventListener('load', () => addAfterInitListener());
         }
       });
     } else {
