@@ -257,9 +257,7 @@ class TinyMceLazyInitializer {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           if (newNode.nodeType === Node.ELEMENT_NODE) {
-              console.warn('XXX debugging');
-              //XXX debugging
-//            this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
+            this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
           }
         }
       }
