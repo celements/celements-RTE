@@ -47,11 +47,23 @@ class CelRteAdaptor {
   #getTinyReadyPromise() {
     console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
 //    const allPromise = Promise.all([this.initCelRTE6(), this.#addTinyMceScript()]);
-    const allPromise = Promise.all([this.initTinyMceV6(), this.#addTinyMceScript()]);
+    const allPromise = Promise.all([
+      this.initTinyMceV6(),
+      this.#addTinyMceScript(),
+      this.#afterTabEditorLoaded()]);
     return allPromise.then(() => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
       tinymce.init(this.#tinyConfigObj);
       console.debug('getTinyReadyPromise tinymce.init done.');
+    });
+  }
+
+  #afterTabEditorLoaded() {
+    return new Promise((resolve) => {
+      getCelementsTabEditor().addAfterInitListener(() => {
+        resolve();
+        console.debug('afterTabEditorLoaded resolved.');
+      });
     });
   }
 
@@ -229,7 +241,9 @@ class TinyMceLazyInitializer {
       if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           if (newNode.nodeType === Node.ELEMENT_NODE) {
-            this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
+              console.warn('XXX debugging');
+              //XXX debugging
+//            this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
           }
         }
       }
@@ -273,7 +287,9 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 if (typeof window.getCelementsTabEditor === 'function') {
   window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
     celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
-  celRteAdaptor.lazyLoadTinyMCE(document.body);
+      console.warn('XXX debugging');
+      //XXX debugging
+//  celRteAdaptor.lazyLoadTinyMCE(document.body);
   //XXX addAfterInitListener still needed with MutationObserver???
   //getCelementsTabEditor().addAfterInitListener(initCelRTE6Bind);
 }
