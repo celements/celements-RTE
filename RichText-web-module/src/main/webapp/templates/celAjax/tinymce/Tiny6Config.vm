@@ -124,6 +124,7 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #set($jsonBuilder = $services.json.newBuilder())##
 $jsonBuilder.openDictionary()##
 $jsonBuilder.addProperty("selector", "textarea.tinyMCE,textarea.mceEditor")##
+$jsonBuilder.addProperty("body_class", "mceContentBody")##
 $jsonBuilder.addProperty("language", "$!admin_language")##
 $jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
 $jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
