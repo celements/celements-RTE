@@ -46,7 +46,7 @@ class CelRteAdaptor {
   }
 
   #initTabEditorIfLoaded() {
-    this.afterTabEditorInitializedPromise().then(() => {
+    this.#afterTabEditorInitializedPromise().then(() => {
       console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
       window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
         this.delayedEditorOpeningPromiseHandler.bind(this));
@@ -71,7 +71,7 @@ class CelRteAdaptor {
     return celTabMenuDivs.length > 0;
   }
 
-  afterTabEditorInitializedPromise() {
+  #afterTabEditorInitializedPromise() {
     if (this.isInTabEditor()) {
       return new Promise((resolve) => {
         if (typeof window.getCelementsTabEditor === 'function') {
@@ -88,7 +88,7 @@ class CelRteAdaptor {
   #afterTabEditorLoadedPromise() {
     if (this.isInTabEditor()) {
       return new Promise((resolve) => {
-        this.afterTabEditorInitializedPromise().then(() => {
+        this.#afterTabEditorInitializedPromise().then(() => {
           window.getCelementsTabEditor().addAfterInitListener(() => {
             resolve();
             console.debug('afterTabEditorLoadedPromise resolved.');
