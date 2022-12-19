@@ -35,7 +35,7 @@
   "body_class" : "$!{pageStyles.trim()}",
   "language" : "$admin_language",
   "theme" : "advanced",
-  "editor_css" : "$services.celementsweb.getSkinFile(':celRTE/celements-ui.css')",
+  "editor_css" : "$services.celementsweb.getSkinFile(':celRTE/content-css/celements-ui.css', 'file')",
   ## lookup the additional rte_plugins field in the XWiki and WebPreference
   #set($rtePluginsConfig = $services.rteconfig.getRTEConfigField('plugins'))
   ##FP 16.11.2012; remove "autoresize" from rtePluginsPre because there are issues
@@ -75,7 +75,7 @@
   "document_base_url" : "/",
   "inline_styles" : true,
   "accessibility_warnings" : false,
-  #set($content_css_filenameURL = "$celementsweb.getSkinFile(':celRes/celements2-content.css', 'file')")
+  #set($content_css_filenameURL = "$services.celementsweb.getSkinFile(':celRTE/content-css/celements2-content.css', 'file')")
   #foreach($cssObj in $services.css.getRTEContentCSS())
   #if("$!{cssObj.getCSS()}" != '')
       #set($content_css_filenameURL = "$!{content_css_filenameURL},$!{cssObj.getCSS()}")
