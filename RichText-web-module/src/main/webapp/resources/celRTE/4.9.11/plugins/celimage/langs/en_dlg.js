@@ -79,5 +79,4 @@ effects : "effect",
   "release" : "release",
   "exec" : "apply",
   "resetMax" : "reset to max"
-
 });

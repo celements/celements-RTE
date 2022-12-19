@@ -65,3 +65,4 @@ tinyMCE.addI18n('fr.celimage_dlg', {
 	  "hasOverlay" : "ouvrir image dans overlay",
 	  "hasCloseButton" : "ajouter un bouton pour fermer"
 });
+
