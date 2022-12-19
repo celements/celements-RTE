@@ -53,17 +53,15 @@ class CelRteAdaptor {
     });
   }
 
-  #getTinyReadyPromise() {
+  async #getTinyReadyPromise() {
     console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
-    const allPromise = Promise.all([
+    await Promise.all([
       this.initCelRTE6(),
       this.#addTinyMceScript(),
       this.#afterTabEditorLoadedPromise()]);
-    return allPromise.then(() => {
-      console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
-      tinymce.init(this.#tinyConfigObj);
-      console.debug('getTinyReadyPromise tinymce.init done.');
-    });
+    console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
+    tinymce.init(this.#tinyConfigObj);
+    console.debug('getTinyReadyPromise tinymce.init done.');
   }
 
   isInTabEditor() {
