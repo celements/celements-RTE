@@ -42,6 +42,15 @@ class CelRteAdaptor {
     this.#filePicker = new CelFilePicker(options);
     this.#uploadHandler = new CelUploadHandler(options.wiki_attach_path,
       options.wiki_imagedownload_path);
+    this.initTabEditorIfLoaded();
+  }
+
+  initTabEditorIfLoaded() {
+    this.afterTabEditorInitializedPromise().then(() => {
+      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
+      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
+        this.delayedEditorOpeningPromiseHandler.bind(this));
+    });
   }
 
   #getTinyReadyPromise() {
@@ -306,9 +315,3 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
   console.log('loadTinyMCE async: end');
 })(window.celStructEditorManager);
 **/
-
-celRteAdaptor.afterTabEditorInitializedPromise().then(() => {
-  console.log('TabEditor detected, prepare loading init TabEditor.');
-  window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
-    celRteAdaptor.delayedEditorOpeningPromiseHandler.bind(celRteAdaptor));
-});
