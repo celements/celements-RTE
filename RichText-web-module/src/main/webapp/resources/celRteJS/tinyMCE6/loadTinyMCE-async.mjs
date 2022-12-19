@@ -42,10 +42,10 @@ class CelRteAdaptor {
     this.#filePicker = new CelFilePicker(options);
     this.#uploadHandler = new CelUploadHandler(options.wiki_attach_path,
       options.wiki_imagedownload_path);
-    this.initTabEditorIfLoaded();
+    this.#initTabEditorIfLoaded();
   }
 
-  initTabEditorIfLoaded() {
+  #initTabEditorIfLoaded() {
     this.afterTabEditorInitializedPromise().then(() => {
       console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
       window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
