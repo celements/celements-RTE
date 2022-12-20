@@ -34,6 +34,10 @@ class CelRteAdaptor {
   #mceEditorsToInit;
   #tinyConfigObj;
 
+  get tinyReadyPromise() {
+    return this.#tinyReadyPromise;
+  }
+
   constructor(options) {
     this.#mceEditorsToInit = [];
     this.#tinyReadyPromise = this.#getTinyReadyPromise();
@@ -56,7 +60,7 @@ class CelRteAdaptor {
   async #getTinyReadyPromise() {
     console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
     await Promise.all([
-      this.initCelRTE6(),
+      this.#initCelRTE6(),
       this.#addTinyMceScript(),
       this.#afterTabEditorLoadedPromise()]);
     console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
@@ -64,13 +68,12 @@ class CelRteAdaptor {
     console.debug('getTinyReadyPromise tinymce.init done.');
   }
 
-  isInTabEditor() {
-    const celTabMenuDivs = document.querySelectorAll('.celements3_tabMenu');
-    return celTabMenuDivs.length > 0;
+  #isInTabEditor() {
+    return document.querySelectorAll('.celements3_tabMenu').length > 0;
   }
 
   #afterTabEditorInitializedPromise() {
-    if (this.isInTabEditor()) {
+    if (this.#isInTabEditor()) {
       return new Promise((resolve) => {
         if (typeof window.getCelementsTabEditor === 'function') {
           resolve();
@@ -84,7 +87,7 @@ class CelRteAdaptor {
   }
 
   #afterTabEditorLoadedPromise() {
-    if (this.isInTabEditor()) {
+    if (this.#isInTabEditor()) {
       return new Promise((resolve) => {
         this.#afterTabEditorInitializedPromise().then(() => {
           window.getCelementsTabEditor().addAfterInitListener(() => {
@@ -119,21 +122,16 @@ class CelRteAdaptor {
   }
 
   celRte_file_picker_handler(callback, value, meta) {
-    // Provide file and text for the link dialog
     console.log('celRte_file_picker_handler ', value, meta, callback);
-  
     if (meta.filetype == 'file') {
       this.#filePicker.renderFilePickerInOverlay(false, callback, value);
     }
-  
-    // Provide image and alt text for the image dialog
     if (meta.filetype == 'image') {
       this.#filePicker.renderFilePickerInOverlay(true, callback, value);
     }
-  
-    // Provide alternative source and posted for the media dialog
     if (meta.filetype == 'media') {
-      callback('movie.mp4', { source2: 'alt.ogg', poster: 'image.jpg' });
+      //TODO
+      //callback('movie.mp4', { source2: 'alt.ogg', poster: 'image.jpg' });
     }
   }
  
@@ -156,7 +154,7 @@ class CelRteAdaptor {
     console.debug('celSetupTinyMCE finish');
   }
 
-  getUninitializedMceEditors(mceParentElem) {
+  #getUninitializedMceEditors(mceParentElem) {
     console.debug('getUninitializedMceEditors: start ', mceParentElem);
     const mceEditorsToInit = [];
     for (const editorArea of mceParentElem.querySelectorAll('textarea.mceEditor')) {
@@ -177,7 +175,7 @@ class CelRteAdaptor {
   lazyLoadTinyMCE(mceParentElem) {
     this.#tinyReadyPromise.then(() => {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
-      for (const editorAreaId of this.getUninitializedMceEditors(mceParentElem)) {
+      for (const editorAreaId of this.#getUninitializedMceEditors(mceParentElem)) {
         if (!this.#mceEditorsToInit.includes(editorAreaId)) {
           this.#mceEditorsToInit.push(editorAreaId);
           console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
@@ -195,7 +193,7 @@ class CelRteAdaptor {
     });
   }
 
-  async initCelRTE6() {
+  async #initCelRTE6() {
     console.log('initCelRTE6: start');
     const params = new FormData();
     const hrefSearch = window.location.search;
@@ -254,7 +252,7 @@ const celRteAdaptor = new CelRteAdaptor({
   "wiki_imagedownload_path" : "/download/Content_attachments/FileBaseDoc",
   "filebaseFN" : "Content_attachments.FileBaseDoc"
 });
-//const initCelRTE6Bind = celRteAdaptor.initCelRTE6.bind(celRteAdaptor);
+//const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 
 /**
@@ -268,12 +266,12 @@ new TinyMceLazyInitializer(celRteAdaptor).initObserver();
     if (!structManager.isStartFinished()) {
       console.log('structEditorManager not initialized: register for finishLoading');
   //TODO refactor in a Promise.all for initTiny and script load
-      structManager.celStopObserving('structEdit:finishedLoading', initCelRTE6Bind);
-      structManager.celObserve('structEdit:finishedLoading', initCelRTE6Bind);
+      structManager.celStopObserving('structEdit:finishedLoading', tinyReadyPromiseBind);
+      structManager.celObserve('structEdit:finishedLoading', tinyReadyPromiseBind);
     } else {
-      console.log('structEditorManager already initialized calling celRteAdaptor.initCelRTE6');
+      console.log('structEditorManager already initialized calling celRteAdaptor.tinyReadyPromise');
   //TODO refactor in a Promise.all for initTiny and script load
-      celRteAdaptor.initCelRTE6();
+      celRteAdaptor.tinyReadyPromise();
     }
   } else {
     console.warn('No struct editor manager found -> Failed to initialize tinymce4.');
