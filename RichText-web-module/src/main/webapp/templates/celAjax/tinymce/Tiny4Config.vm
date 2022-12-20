@@ -51,7 +51,7 @@ $!services.rteconfig.setRteConfigHint("tinymce4")
   #end
 #end
 ## get other rte preferences
-#set($content_css_filenameURL = [ "$celementsweb.getSkinFile(':celRes/celements2-content.css', 'file')" ])
+#set($content_css_filenameURL = [ "$services.celementsweb.getSkinFile(':celRTE/content-css/celements2-content.css', 'file')" ])
 #foreach($cssObj in $services.css.getRTEContentCSS())
 #if("$!{cssObj.getCSS()}" != '')
     #set($!devNull = $content_css_filenameURL.add("$!{cssObj.getCSS()}"))
