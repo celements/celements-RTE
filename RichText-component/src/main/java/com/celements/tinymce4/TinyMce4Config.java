@@ -79,36 +79,36 @@ public class TinyMce4Config implements RteConfigRole {
       + "thead[align<center?char?justify?left?right|class|valign<baseline?bottom?middle?top],"
       + "-tr[align<center?char?justify?left?right|bgcolor|class|style|rowspan|valign<baseline"
       + "?bottom?middle?top|id],-ol[class|type|compact],-ul[class|type|compact],#li[class]";
-  private static final String SEPARATOR = "|";
-  private static final List<String> ALL_SEPARATOR_LIST = ImmutableList.of(SEPARATOR, "separator");
-  private static final ImmutableList<String> TABLE_CONTROLS = ImmutableList.of("table", SEPARATOR,
+  protected static final String SEPARATOR = "|";
+  protected static final List<String> ALL_SEPARATOR_LIST = ImmutableList.of(SEPARATOR, "separator");
+  protected static final ImmutableList<String> TABLE_CONTROLS = ImmutableList.of("table", SEPARATOR,
       "tablerowprops", "tablecellprops", SEPARATOR, "tableinsertrowbefore", "tableinsertrowafter",
       "tabledeleterow", SEPARATOR, "tableinsertcolbefore", "tableinsertcolafter", "tabledeletecol",
       SEPARATOR, "tablesplitcells", "tablemergecells");
-  private static final ImmutableList<String> CELIMAGE = ImmutableList.of("celimage");
-  private static final ImmutableList<String> CELLINK = ImmutableList.of("cellink");
+  protected static final ImmutableList<String> CELIMAGE = ImmutableList.of("celimage");
+  protected static final ImmutableList<String> CELLINK = ImmutableList.of("cellink");
   private static final List<String> BUTTONS_BLACKLIST = ImmutableList.of("save", "cancel", "",
       "none");
   private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP = initButtonConversionMap();
 
   private static final ImmutableMap<String, List<String>> initButtonConversionMap() {
-    return ImmutableMap.<String, List<String>>builder().put("image", CELIMAGE).put("advimage",
-        CELIMAGE).put("separator", ImmutableList.of(SEPARATOR)).put("advlink", CELLINK).put("link",
-            CELLINK)
-        .put("tablecontrols", TABLE_CONTROLS).put("justifyleft", ImmutableList.of(
-            "alignleft"))
-        .put("justifycenter", ImmutableList.of("aligncenter")).put(
-            "justifyright", ImmutableList.of("alignright"))
-        .put("justifyfull",
-            ImmutableList.of("alignjustify"))
-        .put("pasteword", ImmutableList.of(
-            "paste"))
+    return ImmutableMap.<String, List<String>>builder()
+        .put("image", CELIMAGE)
+        .put("advimage", CELIMAGE)
+        .put("separator", ImmutableList.of(SEPARATOR))
+        .put("advlink", CELLINK).put("link", CELLINK)
+        .put("tablecontrols", TABLE_CONTROLS)
+        .put("justifyleft", ImmutableList.of("alignleft"))
+        .put("justifycenter", ImmutableList.of("aligncenter"))
+        .put("justifyright", ImmutableList.of("alignright"))
+        .put("justifyfull", ImmutableList.of("alignjustify"))
+        .put("pasteword", ImmutableList.of("paste"))
         .build();
   }
 
-  private static final Pattern ROW_LAYOUT_REGEX = Pattern.compile("row_\\d+");
-  private static final String STYLE_NAME = "styles";
-  private static final String STYLE_FORMATS_NAME = "style_formats";
+  protected static final Pattern ROW_LAYOUT_REGEX = Pattern.compile("row_\\d+");
+  protected static final String STYLE_NAME = "styles";
+  protected static final String STYLE_FORMATS_NAME = "style_formats";
 
   @Override
   public List<DocumentReference> getRTEConfigsList() {
@@ -148,6 +148,10 @@ public class TinyMce4Config implements RteConfigRole {
     return rteConfigField;
   }
 
+  protected Map<String, List<String>> getButtonsConversionMap() {
+    return BUTTONS_CONVERSIONMAP;
+  }
+
   String rowLayoutConvert(String rteConfigField) {
     List<String> rteRowList = new ArrayList<>();
     final String[] rteRowArray = rteConfigField.split("[,;]");
@@ -157,8 +161,8 @@ public class TinyMce4Config implements RteConfigRole {
       final String buttonName = element.trim();
       if (!BUTTONS_BLACKLIST.contains(buttonName)) {
         List<String> newButtonNameList = ImmutableList.of(buttonName);
-        if (BUTTONS_CONVERSIONMAP.containsKey(buttonName)) {
-          newButtonNameList = BUTTONS_CONVERSIONMAP.get(buttonName);
+        if (getButtonsConversionMap().containsKey(buttonName)) {
+          newButtonNameList = getButtonsConversionMap().get(buttonName);
         }
         boolean isSeparator = ALL_SEPARATOR_LIST.contains(buttonName);
         if (!isFirst || !isSeparator) {
