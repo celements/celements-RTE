@@ -23,11 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 
-import com.celements.rteConfig.RteConfigRole;
 import com.celements.tinymce4.TinyMce4Config;
-import com.celements.web.service.IWebUtilsService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -38,12 +35,6 @@ public class TinyMce6Config extends TinyMce4Config {
    * CAUTION: do not change the HINT it will be used from the vm-scripts
    */
   public static final String HINT = "tinymce6";
-
-  @Requirement
-  private RteConfigRole rteConfig;
-
-  @Requirement
-  private IWebUtilsService webUtilsService;
 
   private static final ImmutableList<String> CELIMAGE_TINY6 = ImmutableList.of("image");
   private static final ImmutableList<String> CELLINK_TINY6 = ImmutableList.of("link");
