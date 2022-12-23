@@ -151,6 +151,7 @@ $jsonBuilder.openArray("content_css")##
 #end
 $jsonBuilder.closeArray()##
 ## file base link, file picker link
+$jsonBuilder.addProperty("filebaseFN", "$!wiki_filbase_path")
 $jsonBuilder.addProperty("wiki_images_path", "$xwiki.getURL($wiki_filbase_path, 'download')")##
 $jsonBuilder.addProperty("wiki_attach_path", "$attachmentPath")##
 $jsonBuilder.addProperty("wiki_imagedownload_path", "$attachmentDLPath")##

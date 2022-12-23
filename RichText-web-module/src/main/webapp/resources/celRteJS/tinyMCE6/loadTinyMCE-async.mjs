@@ -31,6 +31,7 @@ class CelRteAdaptor {
   #tinyReadyPromise;
   #editorCounter;
   #editorInitPromises;
+  #tinyConfigLoadedPromise;
   #mceEditorsToInit;
   #tinyConfigObj;
 
@@ -38,67 +39,30 @@ class CelRteAdaptor {
     return this.#tinyReadyPromise;
   }
 
-  constructor(options) {
+  constructor(beforeTinyInitPromise) {
     this.#mceEditorsToInit = [];
-    this.#tinyReadyPromise = this.#getTinyReadyPromise();
+    this.#tinyConfigLoadedPromise = this.#initCelRTE6();
+    this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromise);
     this.#editorCounter = 0;
     this.#editorInitPromises = [];
-    this.#filePicker = new CelFilePicker(options);
-    this.#uploadHandler = new CelUploadHandler(options.wiki_attach_path,
-      options.wiki_imagedownload_path);
-    this.#initTabEditorIfLoaded();
+    this.#tinyConfigLoadedPromise.then((tinyConfig) => {
+      this.#filePicker = new CelFilePicker(tinyConfig);
+      this.#uploadHandler = new CelUploadHandler(tinyConfig.wiki_attach_path,
+        tinyConfig.wiki_imagedownload_path);
+    }
   }
 
-  #initTabEditorIfLoaded() {
-    this.#afterTabEditorInitializedPromise().then(() => {
-      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
-      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
-        this.delayedEditorOpeningPromiseHandler.bind(this));
-    });
-  }
-
-  async #getTinyReadyPromise() {
-    console.debug('getTinyReadyPromise start ', this.#tinyConfigObj);
-    await Promise.all([
-      this.#initCelRTE6(),
+  #getTinyReadyPromise(beforeTinyInitPromise) {
+    console.debug('getTinyReadyPromise start ');
+    return Promise.all([
+      this.#tinyConfigLoadedPromise,
       this.#addTinyMceScript(),
-      this.#afterTabEditorLoadedPromise()]);
-    console.debug('getTinyReadyPromise tinymce.init ', tinymce, this.#tinyConfigObj);
-    tinymce.init(this.#tinyConfigObj);
-    console.debug('getTinyReadyPromise tinymce.init done.');
-  }
-
-  #isInTabEditor() {
-    return document.querySelectorAll('.celements3_tabMenu').length > 0;
-  }
-
-  #afterTabEditorInitializedPromise() {
-    if (this.#isInTabEditor()) {
-      return new Promise((resolve) => {
-        if (typeof window.getCelementsTabEditor === 'function') {
-          resolve();
-        } else {
-          document.addEventListener('load', () => resolve());
-        }
-      });
-    } else {
-      return Promise.reject();
-    }
-  }
-
-  #afterTabEditorLoadedPromise() {
-    if (this.#isInTabEditor()) {
-      return new Promise((resolve) => {
-        this.#afterTabEditorInitializedPromise().then(() => {
-          window.getCelementsTabEditor().addAfterInitListener(() => {
-            resolve();
-            console.debug('afterTabEditorLoadedPromise resolved.');
-          });
-        });
-      });
-    } else {
-      return Promise.resolve();
-    }
+      ...beforeTinyInitPromise])
+    .then((tinyConfig) => {
+      console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
+      this.#tinyConfigLoadedPromise.then((tinyConfig) => tinymce.init(tinyConfig));
+      console.debug('getTinyReadyPromise tinymce.init done.');
+    });
   }
 
   #addTinyMceScript() {
@@ -173,7 +137,7 @@ class CelRteAdaptor {
   }
 
   lazyLoadTinyMCE(mceParentElem) {
-    this.#tinyReadyPromise.then(() => {
+    this.#tinyReadyPromise.then((tinyConfig) => {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorAreaId of this.#getUninitializedMceEditors(mceParentElem)) {
         if (!this.#mceEditorsToInit.includes(editorAreaId)) {
@@ -181,7 +145,7 @@ class CelRteAdaptor {
           console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
           tinymce.execCommand("mceAddEditor", false, {
             'id' : editorAreaId,
-            'options' : this.#tinyConfigObj
+            'options' : tinyConfig
           });
         } else {
           console.debug('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
@@ -213,6 +177,7 @@ class CelRteAdaptor {
       this.#tinyConfigObj["setup"] = this.celSetupTinyMCE.bind(this);
       this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
       this.#tinyConfigObj["file_picker_callback"] = this.celRte_file_picker_handler.bind(this);
+      return this.#tinyConfigObj;
     } else {
       throw new Error('fetch failed: ', response.statusText);
     }
@@ -247,11 +212,60 @@ class TinyMceLazyInitializer {
   }
 }
 
-const celRteAdaptor = new CelRteAdaptor({
-  "wiki_attach_path" : "/Content_attachments/FileBaseDoc",
-  "wiki_imagedownload_path" : "/download/Content_attachments/FileBaseDoc",
-  "filebaseFN" : "Content_attachments.FileBaseDoc"
-});
+class TabEditorTinyPlugin {
+
+  constructor() {
+    this.#initTabEditorIfLoaded();
+  }  
+
+  #initTabEditorIfLoaded() {
+    this.#afterTabEditorInitializedPromise().then(() => {
+      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
+      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
+        this.delayedEditorOpeningPromiseHandler.bind(this));
+    });
+  }
+
+  #isInTabEditor() {
+    return document.querySelectorAll('.celements3_tabMenu').length > 0;
+  }
+
+  #afterTabEditorInitializedPromise() {
+    if (this.#isInTabEditor()) {
+      return new Promise((resolve) => {
+        if (typeof window.getCelementsTabEditor === 'function') {
+          resolve();
+        } else {
+          document.addEventListener('load', () => resolve());
+        }
+      });
+    } else {
+      return Promise.reject();
+    }
+  }
+
+  afterTabEditorLoadedPromise() {
+    if (this.#isInTabEditor()) {
+      return new Promise((resolve) => {
+        this.#afterTabEditorInitializedPromise().then(() => {
+          window.getCelementsTabEditor().addAfterInitListener(() => {
+            resolve();
+            console.debug('afterTabEditorLoadedPromise resolved.');
+          });
+        });
+      });
+    } else {
+      return Promise.resolve();
+    }
+  }
+
+}
+
+const tabEditorTinyPlugin = new TabEditorTinyPlugin();
+
+//TODO read from TinyConfig when async loaded
+const celRteAdaptor = new CelRteAdaptor([tabEditorTinyPlugin.afterTabEditorLoadedPromise.this(tabEditorTinyPlugin)]);
+
 //const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
 
