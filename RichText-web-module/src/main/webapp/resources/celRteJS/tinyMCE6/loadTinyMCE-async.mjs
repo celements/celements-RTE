@@ -282,7 +282,7 @@ class StructEditorTinyPlugin {
     return typeof this.#structManager !== "undefined";
   }
 
-  afterStructEditorInitializedPromise() {
+  afterStructEditorLoadedPromise() {
     if (this.#isInStructEditor()) {
       return new Promise((resolve) => {
         if (!this.#structManager.isStartFinished()) {
@@ -292,7 +292,8 @@ class StructEditorTinyPlugin {
         }
       });
     } else {
-      return Promise.reject();
+      console.debug('afterStructEditorLoadedPromise: no structEditor found, skip init tiny');
+      return Promise.resolve();
     }
   }
 
@@ -305,7 +306,7 @@ const structEditorTinyPlugin = new StructEditorTinyPlugin();
 
 celRteAdaptor.start([
   tabEditorTinyPlugin.afterTabEditorLoadedPromise(),
-  structEditorTinyPlugin.afterStructEditorInitializedPromise()
+  structEditorTinyPlugin.afterStructEditorLoadedPromise()
 ]);
 
 //const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
