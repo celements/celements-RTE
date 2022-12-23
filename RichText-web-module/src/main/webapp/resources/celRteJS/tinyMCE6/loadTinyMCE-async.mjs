@@ -60,7 +60,7 @@ class CelRteAdaptor {
       ...beforeTinyInitPromise])
     .then((tinyConfig) => {
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
-      this.#tinyConfigLoadedPromise.then((tinyConfig) => tinymce.init(tinyConfig));
+      tinymce.init(tinyConfig);
       console.debug('getTinyReadyPromise tinymce.init done.');
     });
   }
@@ -219,6 +219,7 @@ class TabEditorTinyPlugin {
   }  
 
   #initTabEditorIfLoaded() {
+    console.debug('#initTabEditorIfLoaded start');
     this.#afterTabEditorInitializedPromise().then(() => {
       console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
       window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
@@ -263,8 +264,7 @@ class TabEditorTinyPlugin {
 
 const tabEditorTinyPlugin = new TabEditorTinyPlugin();
 
-//TODO read from TinyConfig when async loaded
-const celRteAdaptor = new CelRteAdaptor([tabEditorTinyPlugin.afterTabEditorLoadedPromise.this(tabEditorTinyPlugin)]);
+const celRteAdaptor = new CelRteAdaptor([tabEditorTinyPlugin.afterTabEditorLoadedPromise()]);
 
 //const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
