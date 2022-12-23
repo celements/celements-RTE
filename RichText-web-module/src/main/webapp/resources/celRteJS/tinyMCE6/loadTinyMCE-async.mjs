@@ -65,10 +65,12 @@ class CelRteAdaptor {
       this.#tinyConfigLoadedPromise,
       this.#addTinyMceScript(),
       ...beforeTinyInitPromise])
-    .then((tinyConfig) => {
+    .then((values) => {
+      const tinyConfig = values[0];
       console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
       tinymce.init(tinyConfig);
       console.debug('getTinyReadyPromise tinymce.init done.');
+      return tinyConfig;
     });
   }
 
