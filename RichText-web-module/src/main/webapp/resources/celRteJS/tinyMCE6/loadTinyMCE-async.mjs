@@ -35,21 +35,28 @@ class CelRteAdaptor {
   #mceEditorsToInit;
   #tinyConfigObj;
 
-  get tinyReadyPromise() {
-    return this.#tinyReadyPromise;
-  }
-
-  constructor(beforeTinyInitPromise) {
+  constructor() {
     this.#mceEditorsToInit = [];
-    this.#tinyConfigLoadedPromise = this.#initCelRTE6();
-    this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromise);
     this.#editorCounter = 0;
     this.#editorInitPromises = [];
+  }
+
+  start(beforeTinyInitPromise) {
+    this.#tinyConfigLoadedPromise = this.#initCelRTE6();
+    this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromise);
     this.#tinyConfigLoadedPromise.then((tinyConfig) => {
       this.#filePicker = new CelFilePicker(tinyConfig);
       this.#uploadHandler = new CelUploadHandler(tinyConfig.wiki_attach_path,
         tinyConfig.wiki_imagedownload_path);
     });
+  }
+
+  getEditorInitPromises() {
+    return this.#editorInitPromises;
+  }
+
+  get tinyReadyPromise() {
+    return this.#tinyReadyPromise;
   }
 
   #getTinyReadyPromise(beforeTinyInitPromise) {
@@ -99,14 +106,6 @@ class CelRteAdaptor {
     }
   }
  
-  delayedEditorOpeningPromiseHandler(event) {
-    console.debug('delayedEditorOpeningPromiseHandler: start ', event.memo);
-    const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
-    const editorFinishPromise = this.#editorInitPromises;
-    event.memo.beforePromises.push(editorFinishPromise);
-    console.debug('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
-  }
-
   celSetupTinyMCE(editor) {
     this.#editorInitPromises.push(new Promise((resolve) => {
       console.debug("celSetupTinyMCE: register 'init' listener for editor", editor.id);
@@ -213,10 +212,20 @@ class TinyMceLazyInitializer {
 }
 
 class TabEditorTinyPlugin {
+  #celRteAdaptor;
 
-  constructor() {
+  constructor(celRteAdaptor) {
+    this.#celRteAdaptor = celRteAdaptor;
     this.#initTabEditorIfLoaded();
   }  
+
+  delayedEditorOpeningPromiseHandler(event) {
+    console.debug('delayedEditorOpeningPromiseHandler: start ', event.memo);
+    const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
+    const editorFinishPromise = this.#celRteAdaptor.getEditorInitPromises();
+    event.memo.beforePromises.push(editorFinishPromise);
+    console.debug('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
+  }
 
   #initTabEditorIfLoaded() {
     console.debug('#initTabEditorIfLoaded start');
@@ -289,10 +298,12 @@ class StructEditorTinyPlugin {
 
 }
 
-const tabEditorTinyPlugin = new TabEditorTinyPlugin();
+const celRteAdaptor = new CelRteAdaptor();
+
+const tabEditorTinyPlugin = new TabEditorTinyPlugin(celRteAdaptor);
 const structEditorTinyPlugin = new StructEditorTinyPlugin();
 
-const celRteAdaptor = new CelRteAdaptor([
+celRteAdaptor.start([
   tabEditorTinyPlugin.afterTabEditorLoadedPromise(),
   structEditorTinyPlugin.afterStructEditorInitializedPromise()
 ]);
