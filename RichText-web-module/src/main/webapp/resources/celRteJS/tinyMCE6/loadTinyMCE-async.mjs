@@ -309,30 +309,4 @@ celRteAdaptor.start([
   structEditorTinyPlugin.afterStructEditorLoadedPromise()
 ]);
 
-//const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
-
-/**
- * loading in struct layout editor
- **/
-//XXX structEdit:finishLoading still needed with MutationObserver???
-/**
-(function(structManager){
-  console.log('loadTinyMCE async: start');
-  if (structManager) {
-    if (!structManager.isStartFinished()) {
-      console.log('structEditorManager not initialized: register for finishLoading');
-  //TODO refactor in a Promise.all for initTiny and script load
-      structManager.celStopObserving('structEdit:finishedLoading', tinyReadyPromiseBind);
-      structManager.celObserve('structEdit:finishedLoading', tinyReadyPromiseBind);
-    } else {
-      console.log('structEditorManager already initialized calling celRteAdaptor.tinyReadyPromise');
-  //TODO refactor in a Promise.all for initTiny and script load
-      celRteAdaptor.tinyReadyPromise();
-    }
-  } else {
-    console.warn('No struct editor manager found -> Failed to initialize tinymce4.');
-  }
-  console.log('loadTinyMCE async: end');
-})(window.celStructEditorManager);
-**/
