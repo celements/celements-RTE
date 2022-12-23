@@ -262,7 +262,9 @@ class TabEditorTinyPlugin {
 
 }
 
-class StructEditorTinyPlugin() {
+class StructEditorTinyPlugin {
+  #structManager;
+
   constructor() {
     this.#structManager = window.celStructEditorManager;
   }  
