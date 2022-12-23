@@ -49,7 +49,7 @@ class CelRteAdaptor {
       this.#filePicker = new CelFilePicker(tinyConfig);
       this.#uploadHandler = new CelUploadHandler(tinyConfig.wiki_attach_path,
         tinyConfig.wiki_imagedownload_path);
-    }
+    });
   }
 
   #getTinyReadyPromise(beforeTinyInitPromise) {
@@ -262,9 +262,38 @@ class TabEditorTinyPlugin {
 
 }
 
-const tabEditorTinyPlugin = new TabEditorTinyPlugin();
+class StructEditorTinyPlugin() {
+  constructor() {
+    this.#structManager = window.celStructEditorManager;
+  }  
 
-const celRteAdaptor = new CelRteAdaptor([tabEditorTinyPlugin.afterTabEditorLoadedPromise()]);
+  #isInStructEditor() {
+    return typeof this.#structManager !== "undefined";
+  }
+
+  afterStructEditorInitializedPromise() {
+    if (this.#isInStructEditor()) {
+      return new Promise((resolve) => {
+        if (!this.#structManager.isStartFinished()) {
+          this.#structManager.celObserve('structEdit:finishedLoading', () => resolve());
+        } else {
+          resolve();
+        }
+      });
+    } else {
+      return Promise.reject();
+    }
+  }
+
+}
+
+const tabEditorTinyPlugin = new TabEditorTinyPlugin();
+const structEditorTinyPlugin = new StructEditorTinyPlugin();
+
+const celRteAdaptor = new CelRteAdaptor([
+  tabEditorTinyPlugin.afterTabEditorLoadedPromise(),
+  structEditorTinyPlugin.afterStructEditorInitializedPromise()
+]);
 
 //const tinyReadyPromiseBind = celRteAdaptor.tinyReadyPromise.bind(celRteAdaptor);
 new TinyMceLazyInitializer(celRteAdaptor).initObserver();
