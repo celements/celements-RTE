@@ -2,7 +2,7 @@
 ## tinyMCE_width and tinyMCE_height set by PrepareVelocityContextService
 ## ***********************************************************************
 $!services.rteconfig.setRteConfigHint("tinymce6")
-#set($rtePluginsPre = ["print","preview","searchreplace","autolink","directionality","visualblocks","visualchars","fullscreen","image","link","media","template","codesample","table","charmap","hr","pagebreak","nonbreaking","anchor","toc","insertdatetime","advlist","lists","textcolor","wordcount","imagetools","contextmenu","colorpicker","textpattern","help", "code", "paste"])
+#set($rtePluginsPre = ["preview","searchreplace","autolink","directionality","visualblocks","visualchars","fullscreen","image","link","media","template","codesample","table","charmap","pagebreak","nonbreaking","anchor","insertdatetime","advlist","lists","wordcount","help", "code"])
 #set($rtePluginsConfig = $services.rteconfig.getRTEConfigField('plugins'))
 #set($rteOmitPlugins = [])
 #if("$!rtePluginsConfig" != '')
