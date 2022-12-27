@@ -20,19 +20,6 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
       #set($rtePlugins = "$!{rtePlugins} $!oneRtePlugin")
     #end
   #end
-#set($useCelCrop = ("$!xwiki.getSpacePreference('celcrop')" == '1'))
-#if($services.celementsphoto.useImageAnimations())
-  #set($galleriesXWQL = "from doc.object(XWiki.PhotoAlbumClass) as album")
-  #set($galleriesXWQL = "${galleriesXWQL} where doc.fullName <> 'XWiki.PhotoAlbumClassTemplate'")
-  #set($galleriesXWQL = "${galleriesXWQL} and doc.translation=0")
-  #set($galleriesXWQL = "${galleriesXWQL} order by doc.title, doc.name")
-  #set($availableGalleries = '')
-  #foreach($galleryFN in $services.query.xwql($galleriesXWQL).execute())
-    #set($galleryDoc = $xwiki.getDocument($galleryFN))
-    #set($galleryName = "$!galleryDoc.title ($!galleryDoc.name)")
-    #set($availableGalleries = "$!{availableGalleries},${galleryName}=${galleryFN}")
-  #end
-#end
 ## lookup the rte valid elements in XWiki- and WebPreferences and
 ## default back to the standard configuration
 #set($rte_valid_elements = $services.rteconfig.getRTEConfigField('valid_elements'))
@@ -58,20 +45,17 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 ## file base link, file picker link
 #if(("$!xwiki.getSpacePreference('cel_centralfilebase')" != '') && ("$!xwiki.getSpacePreference('cel_centralfilebase')" != '-'))
   #set($wiki_filbase_path = "$!xwiki.getSpacePreference('cel_centralfilebase')")
+  #set($wiki_filbase_path_ref = $services.reference.resolve($wiki_filbase_path))
 #else
-  #set($wiki_filbase_path = "$doc.getFullName()")
+  #set($wiki_filbase_path_ref = $doc.documentReference)
+  #set($wiki_filbase_path = $services.reference.serialize($wiki_filbase_path_ref, 'local'))
 #end
-#set($attachmentPath = "$xwiki.getURL($wiki_filbase_path, 'view')")
-#set($attachmentDLPath = "$xwiki.getURL($wiki_filbase_path, 'download')")
-#if("$!imagePickerAttPath" != '')
-  #set($attachmentDLPath = $xwiki.getURL("$!imagePickerAttPath", 'download'))
-  #set($attachmentPath = $xwiki.getURL("$!imagePickerAttPath", 'view'))
-#end
+#set($attachmentPath = "$!service.url.getURL($wiki_filbase_path_ref, 'view')")
+#set($attachmentDLPath = "$!service.url.getURL($wiki_filbase_path_ref, 'download')")
 #set($linkPickerSpaces = "$!linkPickerSpaces") ## linkPickerSpaces could be undefined
-##FIXME move to blog-component after adding a linkPicker-api
-#set($blogPageDoc = $xwiki.celementsblog.getBlogPageByBlogSpace("$doc.space"))
-#if("$!blogPageDoc" != '')
-  #set($linkPickerSpaces = "$!blogPageDoc.space")
+#set($blogPageDocRef = $services.celementsblog.getBlogDocRefByBlogSpace("$doc.space"))
+#if("$!blogPageDocRef" != '')
+  #set($linkPickerSpaces = "$!{blogPageDocRef.lastSpaceReference}")
 #end
 ##FIXME $linkPickerSpace must be given by input parameter depending on rte context
 #set($linkPickerSpace = "$doc.space")
@@ -138,13 +122,6 @@ $jsonBuilder.openArray("toolbar")##
   $jsonBuilder.addValue($rteRowLayout)
 #end
 $jsonBuilder.closeArray()##
-#* NOT YET AVAILABLE IN celRte tinymce6
-$jsonBuilder.addProperty("celanim_slideshow",  $!services.celementsphoto.useImageAnimations())##
-$jsonBuilder.addProperty("cel_crop",  $!useCelCrop)##
-#if($services.celementsphoto.useImageAnimations())
-  $jsonBuilder.addProperty("gallerylist", "$availableGalleries.replaceFirst(',','')")##
-#end
-*#
 $jsonBuilder.openArray("content_css")##
 #foreach($cssURL in $content_css_filenameURL)
   $jsonBuilder.addValue($cssURL)
@@ -152,7 +129,7 @@ $jsonBuilder.openArray("content_css")##
 $jsonBuilder.closeArray()##
 ## file base link, file picker link
 $jsonBuilder.addProperty("filebaseFN", "$!wiki_filbase_path")
-$jsonBuilder.addProperty("wiki_images_path", "$xwiki.getURL($wiki_filbase_path, 'download')")##
+$jsonBuilder.addProperty("wiki_images_path", "$attachmentDLPath")##
 $jsonBuilder.addProperty("wiki_attach_path", "$attachmentPath")##
 $jsonBuilder.addProperty("wiki_imagedownload_path", "$attachmentDLPath")##
 $jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
