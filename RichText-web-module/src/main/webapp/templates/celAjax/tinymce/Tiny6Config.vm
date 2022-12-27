@@ -53,7 +53,7 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #set($attachmentPath = "$!service.url.getURL($wiki_filbase_path_ref, 'view')")
 #set($attachmentDLPath = "$!service.url.getURL($wiki_filbase_path_ref, 'download')")
 #set($linkPickerSpaces = "$!linkPickerSpaces") ## linkPickerSpaces could be undefined
-#set($blogPageDocRef = $services.celementsblog.getBlogDocRefByBlogSpace("$doc.space"))
+#set($blogPageDocRef = $services.celblog.getBlogDocRefByBlogSpace("$doc.space"))
 #if("$!blogPageDocRef" != '')
   #set($linkPickerSpaces = "$!{blogPageDocRef.lastSpaceReference}")
 #end
