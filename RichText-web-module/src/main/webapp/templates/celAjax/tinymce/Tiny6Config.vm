@@ -59,7 +59,6 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #end
 ##FIXME $linkPickerSpace must be given by input parameter depending on rte context
 #set($linkPickerSpace = "$doc.space")
-#set($filePickerSpace = "$linkPickerSpace") ## filePickerSpace must be a single space!!
 #if("$!linkPickerSpaces" != '')
   #set($linkPickerSpace = "$!linkPickerSpaces")
 #end
@@ -67,42 +66,9 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #if(("$!parentSpace" != '') && ($linkPickerSpace.indexOf("$!{parentSpace}") < 0))
   #set($linkPickerSpace = "$!linkPickerSpace,$!{parentSpace}")
 #end
-#set($fileUploadSpace = "$doc.space")
-#if("$!fileBaseUploadSpace" != '')
-  #set($fileUploadSpace = "$!fileBaseUploadSpace")
-#end
-#set($isSingle = '1')
-#if("$!fileBaseSingleDoc" != '')
-  #set($isSingle = "$fileBaseSingleDoc")
-#end
-#if("$!fileBasePickerSpace" != '')
-  #set($filePickerSpace = "$!fileBasePickerSpace")
-#end
-#set($filePickerDoc = $doc.getName())
-#if("$!singleAttachmentDocument" != '')
-  #set($filePickerDoc = "$!singleAttachmentDocument")
-#end
 ##
 #set($allLinkPickerSpaces = "$!linkPickerSpace,$!services.rteconfig.getRTEConfigField('link_picker_spaces')")
 #set($allLinkPickerSpaces = $allLinkPickerSpaces.replaceAll(',,|^,|,$', ''))
-#set($fbDoc = "$!xwiki.getSpacePreference('cel_centralfilebase')")
-#if (("$!fbDoc" == '') && ("$!parentSpace" != ''))
-  #set($fbDoc = "$!xwiki.getSpacePreferenceFor('cel_centralfilebase', $parentSpace)")
-#end
-#if("$!fbDoc" == '')
-  #set($fbDoc = "${filePickerSpace}_filebase.AttachmentDocument")
-#elseif("$!fbDoc" == '-')
-  #set($fbDoc = "${filePickerSpace}.${filePickerDoc}")
-#end
-#set($hasUpload = '1') ## from where?
-#set($filebaseURL = "$doc.getURL('view')")
-#if("$!filebaseURL" == '')
-  #set($filebaseURL = "/WebHome")
-#end
-#set($filebaseURL = "$!{filebaseURL}?xpage=celements_ajax&ajax_mode=FileBase&picker=1")
-#set($filebaseURL = "$!{filebaseURL}&single_doc=${fbDoc}&fieldname=href")
-#set($filebaseURL = "$!{filebaseURL}&src_doc=${filePickerSpace}.${filePickerDoc}&columns=10")
-#set($filebaseURL = "$!{filebaseURL}&root=${filePickerSpace}&hasUpload=$hasUpload")
 ##
 ## start writing JSON
 #set($jsonBuilder = $services.json.newBuilder())##
@@ -134,11 +100,6 @@ $jsonBuilder.addProperty("wiki_attach_path", "$attachmentPath")##
 $jsonBuilder.addProperty("wiki_imagedownload_path", "$attachmentDLPath")##
 $jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
 $jsonBuilder.addProperty("wiki_linkpicker_baseurl", "$doc.getURL('view')")##
-$jsonBuilder.addProperty("wiki_filepicker_upload_space", "$fileUploadSpace")##
-$jsonBuilder.addProperty("wiki_filepicker_space", "$filePickerSpace")##
-$jsonBuilder.addProperty("wiki_filepicker_doc", "$filePickerDoc")##
-$jsonBuilder.addProperty("wiki_filebase_link", "$!{filebaseURL}")##
-$jsonBuilder.addProperty("wiki_filebase_single_doc", "$isSingle")##
 $jsonBuilder.addProperty("entity_encoding", "raw")##
 $jsonBuilder.addProperty("autoresize_bottom_margin", 1)##
 $jsonBuilder.addProperty("autoresize_min_height", 0)##
