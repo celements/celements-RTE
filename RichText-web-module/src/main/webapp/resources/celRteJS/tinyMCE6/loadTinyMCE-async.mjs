@@ -182,8 +182,7 @@ class CelRteAdaptor {
       body: params
     });
     if (response.ok) {
-      const tinyConfigObj = Object.assign(Object.assign({}, this.#tinyDefaults),
-         await response.json());
+      const tinyConfigObj = Object.assign({}, this.#tinyDefaults, await response.json());
       console.log('tinymce6 config loaded: starting tiny');
       tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
       tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
