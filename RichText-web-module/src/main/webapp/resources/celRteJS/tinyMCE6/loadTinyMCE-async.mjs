@@ -34,6 +34,14 @@ class CelRteAdaptor {
   #tinyConfigLoadedPromise;
   #mceEditorsToInit;
   #tinyConfigObj;
+  #tinyDefaults = {
+    'entity_encoding' : 'raw',
+    'image_advtab' : true,
+    'automatic_uploads' : true,
+    'image_uploadtab' : true,
+    'autoresize_bottom_margin' : 1,
+    'autoresize_min_height' : 0
+  };
 
   constructor() {
     this.#mceEditorsToInit = [];
@@ -178,12 +186,19 @@ class CelRteAdaptor {
     if (response.ok) {
       this.#tinyConfigObj = await response.json() ?? {};
       console.log('tinymce6 config loaded: starting tiny');
+      this.addTinyConfigDefaults();
       this.#tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
       this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
       this.#tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
       return this.#tinyConfigObj;
     } else {
       throw new Error('fetch failed: ', response.statusText);
+    }
+  }
+
+  addTinyConfigDefaults() {
+    for (const key in this.#tinyDefaults) {
+      this.#tinyConfigObj[key] = this.#tinyConfigObj[key] ?? this.#tinyDefaults[key];
     }
   }
 }
