@@ -41,9 +41,9 @@ class CelRteAdaptor {
     this.#editorInitPromises = [];
   }
 
-  start(beforeTinyInitPromise) {
+  start(beforeTinyInitPromiseArray) {
     this.#tinyConfigLoadedPromise = this.#initCelRTE6();
-    this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromise);
+    this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromiseArray);
     this.#setupFilePickerAndUploadHandler(this.#tinyConfigLoadedPromise);
   }
 
@@ -63,12 +63,12 @@ class CelRteAdaptor {
     return this.#tinyReadyPromise;
   }
 
-  async #getTinyReadyPromise(beforeTinyInitPromise) {
+  async #getTinyReadyPromise(beforeTinyInitPromiseArray) {
     console.debug('getTinyReadyPromise start ');
     const values_1 = await Promise.all([
         this.#tinyConfigLoadedPromise,
         this.#addTinyMceScript(),
-        ...beforeTinyInitPromise
+        ...beforeTinyInitPromiseArray
     ]);
     const tinyConfig = values_1[0];
     console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
