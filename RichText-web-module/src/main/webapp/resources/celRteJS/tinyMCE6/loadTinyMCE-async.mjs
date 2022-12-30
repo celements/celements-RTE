@@ -35,6 +35,8 @@ class CelRteAdaptor {
   #mceEditorsToInit;
   #tinyConfigObj;
   #tinyDefaults = {
+    'menubar' : false,
+    'branding' : false,
     'entity_encoding' : 'raw',
     'image_advtab' : true,
     'automatic_uploads' : true,

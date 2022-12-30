@@ -80,8 +80,6 @@ $jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
 $jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
 $jsonBuilder.addProperty("height", "$!tinyMCE_height")##
 $jsonBuilder.addProperty("width", "$!tinyMCE_width")##
-$jsonBuilder.addProperty("menubar", false)##
-$jsonBuilder.addProperty("branding", false)##
 $jsonBuilder.addProperty("plugins", "$!rtePlugins")##
 $jsonBuilder.openArray("toolbar")##
 #foreach($rteRowLayout in $rteRows)
@@ -99,13 +97,7 @@ $jsonBuilder.addProperty("attach_path", "$attachmentPath")##
 $jsonBuilder.addProperty("download_path", "$attachmentDLPath")##
 $jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
 $jsonBuilder.addProperty("wiki_linkpicker_baseurl", "$doc.getURL('view')")##
-$jsonBuilder.addProperty("autoresize_bottom_margin", 1)##
-$jsonBuilder.addProperty("autoresize_min_height", 0)##
 $jsonBuilder.openProperty("style_formats")##
 $jsonBuilder.addValue($services.rteconfig.getRteJsonConfigField("style_formats"))##
 $jsonBuilder.closeDictionary()## tiny6 config dictionary
 $jsonBuilder.getJSON()
-##        templates: [
-##          { title: 'Test template 1', content: 'Test 1' },
-##          { title: 'Test template 2', content: 'Test 2' }
-##        ],
