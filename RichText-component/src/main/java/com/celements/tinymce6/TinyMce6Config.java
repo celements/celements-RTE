@@ -38,20 +38,20 @@ public class TinyMce6Config extends TinyMce4Config {
 
   private static final ImmutableList<String> CELIMAGE_TINY6 = ImmutableList.of("image");
   private static final ImmutableList<String> CELLINK_TINY6 = ImmutableList.of("link");
-  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP_TINY6 = ImmutableMap.<String, List<String>>builder()
-        .put("celimage", CELIMAGE_TINY6)
-        .put("advimage", CELIMAGE_TINY6)
-        .put("separator", ImmutableList.of(SEPARATOR))
-        .put("advlink", CELLINK_TINY6)
-        .put("cellink", CELLINK_TINY6)
-        .put("tablecontrols", TABLE_CONTROLS)
-        .put("justifyleft", ImmutableList.of("alignleft"))
-        .put("justifycenter", ImmutableList.of("aligncenter"))
-        .put("justifyright", ImmutableList.of("alignright"))
-        .put("justifyfull", ImmutableList.of("alignjustify"))
-        .put("pasteword", ImmutableList.of("paste"))
-        .build();
-  }
+  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP_TINY6 = ImmutableMap
+      .<String, List<String>>builder()
+      .put("celimage", CELIMAGE_TINY6)
+      .put("advimage", CELIMAGE_TINY6)
+      .put("separator", ImmutableList.of(SEPARATOR))
+      .put("advlink", CELLINK_TINY6)
+      .put("cellink", CELLINK_TINY6)
+      .put("tablecontrols", TABLE_CONTROLS)
+      .put("justifyleft", ImmutableList.of("alignleft"))
+      .put("justifycenter", ImmutableList.of("aligncenter"))
+      .put("justifyright", ImmutableList.of("alignright"))
+      .put("justifyfull", ImmutableList.of("alignjustify"))
+      .put("pasteword", ImmutableList.of("paste"))
+      .build();
 
   @Override
   protected Map<String, List<String>> getButtonsConversionMap() {

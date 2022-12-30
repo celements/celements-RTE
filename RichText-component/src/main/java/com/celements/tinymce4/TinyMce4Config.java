@@ -89,22 +89,19 @@ public class TinyMce4Config implements RteConfigRole {
   protected static final ImmutableList<String> CELLINK = ImmutableList.of("cellink");
   private static final List<String> BUTTONS_BLACKLIST = ImmutableList.of("save", "cancel", "",
       "none");
-  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP = initButtonConversionMap();
-
-  private static final ImmutableMap<String, List<String>> initButtonConversionMap() {
-    return ImmutableMap.<String, List<String>>builder()
-        .put("image", CELIMAGE)
-        .put("advimage", CELIMAGE)
-        .put("separator", ImmutableList.of(SEPARATOR))
-        .put("advlink", CELLINK).put("link", CELLINK)
-        .put("tablecontrols", TABLE_CONTROLS)
-        .put("justifyleft", ImmutableList.of("alignleft"))
-        .put("justifycenter", ImmutableList.of("aligncenter"))
-        .put("justifyright", ImmutableList.of("alignright"))
-        .put("justifyfull", ImmutableList.of("alignjustify"))
-        .put("pasteword", ImmutableList.of("paste"))
-        .build();
-  }
+  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP = ImmutableMap
+      .<String, List<String>>builder()
+      .put("image", CELIMAGE)
+      .put("advimage", CELIMAGE)
+      .put("separator", ImmutableList.of(SEPARATOR))
+      .put("advlink", CELLINK).put("link", CELLINK)
+      .put("tablecontrols", TABLE_CONTROLS)
+      .put("justifyleft", ImmutableList.of("alignleft"))
+      .put("justifycenter", ImmutableList.of("aligncenter"))
+      .put("justifyright", ImmutableList.of("alignright"))
+      .put("justifyfull", ImmutableList.of("alignjustify"))
+      .put("pasteword", ImmutableList.of("paste"))
+      .build();
 
   protected static final Pattern ROW_LAYOUT_REGEX = Pattern.compile("row_\\d+");
   protected static final String STYLE_NAME = "styles";
