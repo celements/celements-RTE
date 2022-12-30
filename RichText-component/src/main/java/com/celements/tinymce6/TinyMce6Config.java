@@ -38,10 +38,7 @@ public class TinyMce6Config extends TinyMce4Config {
 
   private static final ImmutableList<String> CELIMAGE_TINY6 = ImmutableList.of("image");
   private static final ImmutableList<String> CELLINK_TINY6 = ImmutableList.of("link");
-  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP_TINY6 = initButtonConversionMap();
-
-  private static final ImmutableMap<String, List<String>> initButtonConversionMap() {
-    return ImmutableMap.<String, List<String>>builder()
+  private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP_TINY6 = ImmutableMap.<String, List<String>>builder()
         .put("celimage", CELIMAGE_TINY6)
         .put("advimage", CELIMAGE_TINY6)
         .put("separator", ImmutableList.of(SEPARATOR))
