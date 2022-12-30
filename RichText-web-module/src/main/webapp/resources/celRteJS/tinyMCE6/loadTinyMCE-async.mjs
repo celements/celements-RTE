@@ -55,7 +55,7 @@ class CelRteAdaptor {
   }
 
   async #setupFilePickerAndUploadHandler(tinyConfigLoadedPromise) {
-    const tinyConfig = await tinyConfigLoadedPromise();
+    const tinyConfig = await tinyConfigLoadedPromise;
     this.#filePicker = new CelFilePicker(tinyConfig);
     this.#uploadHandler = new CelUploadHandler(tinyConfig.attach_path, tinyConfig.download_path);
   }
@@ -69,14 +69,14 @@ class CelRteAdaptor {
   }
 
   async #getTinyReadyPromise(beforeTinyInitPromiseArray) {
-    console.trace('getTinyReadyPromise start ');
-    const tinyConfig = await this.#tinyConfigLoadedPromise();
+    console.trace('getTinyReadyPromise start');
+    const tinyConfig = await this.#tinyConfigLoadedPromise;
     await Promise.all([
         this.#tinyConfigLoadedPromise,
         this.#addTinyMceScript(),
         ...beforeTinyInitPromiseArray
     ]);
-    console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
+    console.debug('getTinyReadyPromise tinymce.init', tinymce, tinyConfig);
     tinymce.init(tinyConfig);
     console.debug('getTinyReadyPromise tinymce.init done.');
     return tinyConfig;
@@ -103,13 +103,13 @@ class CelRteAdaptor {
   }
 
   filePickerHandler(callback, value, meta) {
-    console.log('filePickerHandler ', value, meta, callback);
-    if (meta.filetype == 'file') {
+    console.log('filePickerHandler', value, meta, callback);
+    if (meta.filetype === 'file') {
       this.#filePicker.renderFilePickerInOverlay(false, callback, value);
-    } else if (meta.filetype == 'image') {
+    } else if (meta.filetype === 'image') {
       this.#filePicker.renderFilePickerInOverlay(true, callback, value);
     } else {
-      throw new Exception("unsupported filetype 'media'");
+      throw new Exception("unsupported filetype '" + meta.filetype + "'");
     }
   }
  
@@ -126,7 +126,7 @@ class CelRteAdaptor {
   }
 
   #getUninitializedMceEditors(mceParentElem) {
-    console.trace('getUninitializedMceEditors: start ', mceParentElem);
+    console.trace('getUninitializedMceEditors: start', mceParentElem);
     const mceEditorsToInit = [];
     for (const editorArea of mceParentElem.querySelectorAll(
         'textarea.mceEditor:not([data-cel-rte-state])')) {
@@ -186,7 +186,7 @@ class CelRteAdaptor {
       tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
       return tinyConfigObj;
     } else {
-      throw new Error('fetch failed: ', response.statusText);
+      throw new Error('fetch failed:', response.statusText);
     }
   }
 }
@@ -223,11 +223,11 @@ class TabEditorTinyPlugin {
   }  
 
   delayedEditorOpeningPromiseHandler(event) {
-    console.trace('delayedEditorOpeningPromiseHandler: start ', event.memo);
+    console.trace('delayedEditorOpeningPromiseHandler: start', event.memo);
     const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
     const editorFinishPromise = this.#rteAdaptor.editorInitPromises;
     event.memo.beforePromises.push(editorFinishPromise);
-    console.trace('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
+    console.trace('delayedEditorOpeningPromiseHandler: end', mceParentElem);
   }
 
   async #initTabEditorIfLoaded() {
