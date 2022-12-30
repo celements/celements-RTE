@@ -54,12 +54,10 @@ class CelRteAdaptor {
     this.#setupFilePickerAndUploadHandler(this.#tinyConfigLoadedPromise);
   }
 
-  #setupFilePickerAndUploadHandler(tinyConfigLoadedPromise) {
-    tinyConfigLoadedPromise.then((tinyConfig) => {
-      this.#filePicker = new CelFilePicker(tinyConfig);
-      this.#uploadHandler = new CelUploadHandler(tinyConfig.attach_path,
-        tinyConfig.download_path);
-    });
+  async #setupFilePickerAndUploadHandler(tinyConfigLoadedPromise) {
+    const tinyConfig = await tinyConfigLoadedPromise();
+    this.#filePicker = new CelFilePicker(tinyConfig);
+    this.#uploadHandler = new CelUploadHandler(tinyConfig.attach_path, tinyConfig.download_path);
   }
 
   get editorInitPromises() {
@@ -147,8 +145,9 @@ class CelRteAdaptor {
     return mceEditorsToInit;
   }
 
-  lazyLoadTinyMCE(mceParentElem) {
-    this.#tinyReadyPromise.then((tinyConfig) => {
+  async lazyLoadTinyMCE(mceParentElem) {
+    try {
+      const tinyConfig = await this.#tinyReadyPromise();
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorArea of this.#getUninitializedMceEditors(mceParentElem)) {
         console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorArea.id, mceParentElem);
@@ -159,9 +158,9 @@ class CelRteAdaptor {
         });
       }
       console.debug('lazyLoadTinyMCE: finish', mceParentElem);
-    }).catch((exp) => {
+    } catch (exp) {
       console.error("lazyLoadTinyMCE failed. ", exp);
-    });
+    }
   }
 
   async #initCelRTE6() {
@@ -231,7 +230,7 @@ class TabEditorTinyPlugin {
     console.debug('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
   }
 
-  #initTabEditorIfLoaded() {
+  async #initTabEditorIfLoaded() {
     console.debug('#initTabEditorIfLoaded start');
     await this.#afterTabEditorInitializedPromise();
     console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
