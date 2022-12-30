@@ -97,8 +97,8 @@ class CelRteAdaptor {
     }, progress);
   }
 
-  celRte_file_picker_handler(callback, value, meta) {
-    console.log('celRte_file_picker_handler ', value, meta, callback);
+  filePickerHandler(callback, value, meta) {
+    console.log('filePickerHandler ', value, meta, callback);
     if (meta.filetype == 'file') {
       this.#filePicker.renderFilePickerInOverlay(false, callback, value);
     }
@@ -180,7 +180,7 @@ class CelRteAdaptor {
       console.log('tinymce6 config loaded: starting tiny');
       this.#tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
       this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
-      this.#tinyConfigObj["file_picker_callback"] = this.celRte_file_picker_handler.bind(this);
+      this.#tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
       return this.#tinyConfigObj;
     } else {
       throw new Error('fetch failed: ', response.statusText);
