@@ -50,8 +50,8 @@ class CelRteAdaptor {
   #setupFilePickerAndUploadHandler(tinyConfigLoadedPromise) {
     tinyConfigLoadedPromise.then((tinyConfig) => {
       this.#filePicker = new CelFilePicker(tinyConfig);
-      this.#uploadHandler = new CelUploadHandler(tinyConfig.wiki_attach_path,
-        tinyConfig.wiki_imagedownload_path);
+      this.#uploadHandler = new CelUploadHandler(tinyConfig.attach_path,
+        tinyConfig.download_path);
     });
   }
 

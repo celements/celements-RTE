@@ -50,8 +50,8 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
   #set($wiki_filbase_path_ref = $doc.documentReference)
   #set($wiki_filbase_path = $services.reference.serialize($wiki_filbase_path_ref, 'local'))
 #end
-#set($attachmentPath = "$!service.url.getURL($wiki_filbase_path_ref, 'view')")
-#set($attachmentDLPath = "$!service.url.getURL($wiki_filbase_path_ref, 'download')")
+#set($attachmentPath = "$!services.url.getURL($wiki_filbase_path_ref, 'view')")
+#set($attachmentDLPath = "$!services.url.getURL($wiki_filbase_path_ref, 'download')")
 #set($linkPickerSpaces = "$!linkPickerSpaces") ## linkPickerSpaces could be undefined
 #set($blogPageDocRef = $services.celblog.getBlogDocRefByBlogSpace("$doc.space"))
 #if("$!blogPageDocRef" != '')
@@ -95,9 +95,8 @@ $jsonBuilder.openArray("content_css")##
 $jsonBuilder.closeArray()##
 ## file base link, file picker link
 $jsonBuilder.addProperty("filebaseFN", "$!wiki_filbase_path")
-$jsonBuilder.addProperty("wiki_images_path", "$attachmentDLPath")##
-$jsonBuilder.addProperty("wiki_attach_path", "$attachmentPath")##
-$jsonBuilder.addProperty("wiki_imagedownload_path", "$attachmentDLPath")##
+$jsonBuilder.addProperty("attach_path", "$attachmentPath")##
+$jsonBuilder.addProperty("download_path", "$attachmentDLPath")##
 $jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
 $jsonBuilder.addProperty("wiki_linkpicker_baseurl", "$doc.getURL('view')")##
 $jsonBuilder.addProperty("entity_encoding", "raw")##
