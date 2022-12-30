@@ -133,7 +133,7 @@ class CelRteAdaptor {
     console.debug('getUninitializedMceEditors: start ', mceParentElem);
     const mceEditorsToInit = [];
     for (const editorArea of mceParentElem.querySelectorAll(
-        'textarea.mceEditor:net([data-cel-rte-state])')) {
+        'textarea.mceEditor:not([data-cel-rte-state])')) {
       if (!editorArea.id) {
         editorArea.setAttribute('id', editorArea.name + 'Editor' + (++this.#editorCounter));
       }
