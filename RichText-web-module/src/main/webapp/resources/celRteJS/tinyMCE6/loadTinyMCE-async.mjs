@@ -32,7 +32,7 @@ class CelRteAdaptor {
   #editorCounter;
   #editorInitPromises;
   #tinyConfigLoadedPromise;
-  #tinyDefaults = {
+  #tinyDefaults = Object.freeze({
     'menubar' : false,
     'branding' : false,
     'entity_encoding' : 'raw',
@@ -41,7 +41,7 @@ class CelRteAdaptor {
     'image_uploadtab' : true,
     'autoresize_bottom_margin' : 1,
     'autoresize_min_height' : 0
-  };
+  });
 
   constructor() {
     this.#editorCounter = 0;
