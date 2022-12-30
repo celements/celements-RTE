@@ -5,6 +5,7 @@ html {
 body.mceContentBody  {
   margin: 0px;
   padding: 0px;
+  background-color: white;
 }
 
 body.mceContentBody td {
