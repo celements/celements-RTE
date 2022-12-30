@@ -217,17 +217,17 @@ class TinyMceLazyInitializer {
 }
 
 class TabEditorTinyPlugin {
-  #celRteAdaptor;
+  #rteAdaptor;
 
-  constructor(celRteAdaptor) {
-    this.#celRteAdaptor = celRteAdaptor;
+  constructor(rteAdaptor) {
+    this.#rteAdaptor = rteAdaptor;
     this.#initTabEditorIfLoaded();
   }  
 
   delayedEditorOpeningPromiseHandler(event) {
     console.debug('delayedEditorOpeningPromiseHandler: start ', event.memo);
     const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
-    const editorFinishPromise = this.#celRteAdaptor.editorInitPromises;
+    const editorFinishPromise = this.#rteAdaptor.editorInitPromises;
     event.memo.beforePromises.push(editorFinishPromise);
     console.debug('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
   }
