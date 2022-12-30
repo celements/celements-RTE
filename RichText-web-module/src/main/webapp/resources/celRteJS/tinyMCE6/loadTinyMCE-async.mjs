@@ -204,12 +204,15 @@ class TinyMceLazyInitializer {
   
   initObserver() {
     console.debug("TinyMceLazyInitializer.initObserver: start initObserver");
-    const config = { attributes: false, childList: true, subtree: true };  
     this.#observer = new MutationObserver(mutationList =>
       mutationList.flatMap(mutation => mutation.addedNodes)
       .filter(newNode => (newNode.nodeType === Node.ELEMENT_NODE))
       .forEach(newNode => this.#celRteAdaptor.lazyLoadTinyMCE(newNode)));
-    this.#observer.observe(document.body, config);
+    this.#observer.observe(document.body, {
+      attributes: false,
+      childList: true,
+      subtree: true
+    });
   }
 
 }
