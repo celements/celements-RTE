@@ -111,15 +111,15 @@ class CelRteAdaptor {
     }
   }
  
-  celSetupTinyMCE(editor) {
+  tinyMceSetupDoneHandler(editor) {
     this.#editorInitPromises.push(new Promise((resolve) => {
-      console.debug("celSetupTinyMCE: register 'init' listener for editor", editor.id);
+      console.debug("tinyMceSetupDoneHandler: register 'init' listener for editor", editor.id);
       editor.on('init', (ev) => {
-        console.debug("celSetupTinyMCE: on 'init' for editor done.", editor.id);
+        console.debug("tinyMceSetupDoneHandler: on 'init' for editor done.", editor.id);
         resolve(ev.target);
       });
     }));
-    console.debug('celSetupTinyMCE finish');
+    console.debug('tinyMceSetupDoneHandler finish');
   }
 
   #getUninitializedMceEditors(mceParentElem) {
@@ -178,7 +178,7 @@ class CelRteAdaptor {
     if (response.ok) {
       this.#tinyConfigObj = await response.json() ?? {};
       console.log('tinymce6 config loaded: starting tiny');
-      this.#tinyConfigObj["setup"] = this.celSetupTinyMCE.bind(this);
+      this.#tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
       this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
       this.#tinyConfigObj["file_picker_callback"] = this.celRte_file_picker_handler.bind(this);
       return this.#tinyConfigObj;
