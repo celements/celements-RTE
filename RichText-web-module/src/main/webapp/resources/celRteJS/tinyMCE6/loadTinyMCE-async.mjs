@@ -172,7 +172,8 @@ class CelRteAdaptor {
     const hrefSearch = window.location.search;
     const templateRegEx = /^(\?|(.*&)+)?template=([^=&]*).*$/;
     if (hrefSearch.match(templateRegEx)) {
-      params.append('template', decodeURIComponent(window.location.search.replace(templateRegEx, '$3')));
+      params.append('template', decodeURIComponent(
+        window.location.search.replace(templateRegEx, '$3')));
     }
     console.log('initCelRTE6: before fetch tinymce');
     const response = await fetch('/ajax/tinymce/Tiny6Config', {
@@ -181,23 +182,15 @@ class CelRteAdaptor {
       body: params
     });
     if (response.ok) {
-      const tinyConfigJson = await response.json() ?? {};
-      const tinyConfigObj = {}.
+      const tinyConfigObj = {}.assign(this.tinyDefaults).assign(await response.json());
       console.log('tinymce6 config loaded: starting tiny');
       tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
       tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
       tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
-      return this.addTinyConfigDefaults(tinyConfigObj);
+      return tinyConfigObj;
     } else {
       throw new Error('fetch failed: ', response.statusText);
     }
-  }
-
-  addTinyConfigDefaults(tinyConfigObj) {
-    for (const key in this.#tinyDefaults) {
-      tinyConfigObj[key] = tinyConfigObj[key] ?? this.#tinyDefaults[key];
-    }
-    return tinyConfigObj;
   }
 }
 
@@ -212,10 +205,10 @@ class TinyMceLazyInitializer {
   initObserver() {
     console.debug("TinyMceLazyInitializer.initObserver: start initObserver");
     const config = { attributes: false, childList: true, subtree: true };  
-    this.#observer = new MutationObserver((mutationList) =>
-      mutationList.flatMap((mutation) => mutation.addedNodes)
-      .filter((newNode) => (newNode.nodeType === Node.ELEMENT_NODE))
-      .forEach((newNode) => this.#celRteAdaptor.lazyLoadTinyMCE(newNode)));
+    this.#observer = new MutationObserver(mutationList =>
+      mutationList.flatMap(mutation => mutation.addedNodes)
+      .filter(newNode => (newNode.nodeType === Node.ELEMENT_NODE))
+      .forEach(newNode => this.#celRteAdaptor.lazyLoadTinyMCE(newNode)));
     this.#observer.observe(document.body, config);
   }
 
