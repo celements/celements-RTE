@@ -32,7 +32,7 @@ class CelRteAdaptor {
   #editorCounter;
   #editorInitPromises;
   #tinyConfigLoadedPromise;
-  #tinyDefaults = {
+  #tinyDefaults = Object.freeze({
     'menubar' : false,
     'branding' : false,
     'entity_encoding' : 'raw',
@@ -41,7 +41,7 @@ class CelRteAdaptor {
     'image_uploadtab' : true,
     'autoresize_bottom_margin' : 1,
     'autoresize_min_height' : 0
-  };
+  });
 
   constructor() {
     this.#editorCounter = 0;
@@ -108,11 +108,9 @@ class CelRteAdaptor {
     console.log('filePickerHandler ', value, meta, callback);
     if (meta.filetype == 'file') {
       this.#filePicker.renderFilePickerInOverlay(false, callback, value);
-    }
-    if (meta.filetype == 'image') {
+    } else if (meta.filetype == 'image') {
       this.#filePicker.renderFilePickerInOverlay(true, callback, value);
-    }
-    if (meta.filetype == 'media') {
+    } else {
       throw new Exception("unsupported filetype 'media'");
     }
   }
@@ -235,11 +233,10 @@ class TabEditorTinyPlugin {
 
   #initTabEditorIfLoaded() {
     console.debug('#initTabEditorIfLoaded start');
-    this.#afterTabEditorInitializedPromise().then(() => {
-      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
-      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
-        this.delayedEditorOpeningPromiseHandler.bind(this));
-    });
+    await this.#afterTabEditorInitializedPromise();
+    console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
+    window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
+      this.delayedEditorOpeningPromiseHandler.bind(this));
   }
 
   #isInTabEditor() {
