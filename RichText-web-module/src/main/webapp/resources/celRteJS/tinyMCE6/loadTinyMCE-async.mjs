@@ -108,11 +108,9 @@ class CelRteAdaptor {
     console.log('filePickerHandler ', value, meta, callback);
     if (meta.filetype == 'file') {
       this.#filePicker.renderFilePickerInOverlay(false, callback, value);
-    }
-    if (meta.filetype == 'image') {
+    } else if (meta.filetype == 'image') {
       this.#filePicker.renderFilePickerInOverlay(true, callback, value);
-    }
-    if (meta.filetype == 'media') {
+    } else {
       throw new Exception("unsupported filetype 'media'");
     }
   }
