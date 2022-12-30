@@ -243,31 +243,22 @@ class TabEditorTinyPlugin {
   }
 
   #afterTabEditorInitializedPromise() {
-    if (this.#isInTabEditor()) {
-      return new Promise((resolve) => {
-        if (typeof window.getCelementsTabEditor === 'function') {
-          resolve();
-        } else {
-          document.addEventListener('load', () => resolve());
-        }
-      });
-    } else {
+    if (!this.#isInTabEditor()) {
       return Promise.reject();
+    } else if (typeof window.getCelementsTabEditor === 'function') {
+      return Promise.resolve();
+    } else {
+      return new Promise(resolve => document.addEventListener('load', event => resolve(event)));
     }
   }
 
-  afterTabEditorLoadedPromise() {
+  async afterTabEditorLoadedPromise() {
     if (this.#isInTabEditor()) {
-      return new Promise((resolve) => {
-        this.#afterTabEditorInitializedPromise().then(() => {
-          window.getCelementsTabEditor().addAfterInitListener(() => {
-            resolve();
-            console.debug('afterTabEditorLoadedPromise resolved.');
-          });
-        });
-      });
-    } else {
-      return Promise.resolve();
+      await this.#afterTabEditorInitializedPromise();
+      return new Promise(resolve => window.getCelementsTabEditor().addAfterInitListener(() => {
+        resolve();
+        console.debug('afterTabEditorLoadedPromise resolved.');
+      }));
     }
   }
 
@@ -285,14 +276,9 @@ class StructEditorTinyPlugin {
   }
 
   afterStructEditorLoadedPromise() {
-    if (this.#isInStructEditor()) {
-      return new Promise((resolve) => {
-        if (!this.#structManager.isStartFinished()) {
-          this.#structManager.celObserve('structEdit:finishedLoading', () => resolve());
-        } else {
-          resolve();
-        }
-      });
+    if (this.#isInStructEditor() && !this.#structManager.isStartFinished()) {
+      return new Promise(resolve => this.#structManager.celObserve(
+        'structEdit:finishedLoading', event => resolve(event)));
     } else {
       console.debug('afterStructEditorLoadedPromise: no structEditor found, skip init tiny');
       return Promise.resolve();
