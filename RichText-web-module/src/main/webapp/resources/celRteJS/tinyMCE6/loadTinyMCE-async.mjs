@@ -234,11 +234,10 @@ class TabEditorTinyPlugin {
 
   #initTabEditorIfLoaded() {
     console.debug('#initTabEditorIfLoaded start');
-    this.#afterTabEditorInitializedPromise().then(() => {
-      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
-      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
-        this.delayedEditorOpeningPromiseHandler.bind(this));
-    });
+    await this.#afterTabEditorInitializedPromise();
+    console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
+    window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
+      this.delayedEditorOpeningPromiseHandler.bind(this));
   }
 
   #isInTabEditor() {
