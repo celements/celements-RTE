@@ -32,8 +32,6 @@ class CelRteAdaptor {
   #editorCounter;
   #editorInitPromises;
   #tinyConfigLoadedPromise;
-  #mceEditorsToInit;
-  #tinyConfigObj;
   #tinyDefaults = {
     'menubar' : false,
     'branding' : false,
@@ -46,7 +44,6 @@ class CelRteAdaptor {
   };
 
   constructor() {
-    this.#mceEditorsToInit = [];
     this.#editorCounter = 0;
     this.#editorInitPromises = [];
   }
@@ -116,8 +113,7 @@ class CelRteAdaptor {
       this.#filePicker.renderFilePickerInOverlay(true, callback, value);
     }
     if (meta.filetype == 'media') {
-      //TODO
-      //callback('movie.mp4', { source2: 'alt.ogg', poster: 'image.jpg' });
+      throw new Exception("unsupported filetype 'media'");
     }
   }
  
@@ -126,6 +122,7 @@ class CelRteAdaptor {
       console.debug("tinyMceSetupDoneHandler: register 'init' listener for editor", editor.id);
       editor.on('init', (ev) => {
         console.debug("tinyMceSetupDoneHandler: on 'init' for editor done.", editor.id);
+        document.getElementById(editor.id).setAttribute('cel-rte-state', 'initialized');
         resolve(ev.target);
       });
     }));
@@ -135,15 +132,17 @@ class CelRteAdaptor {
   #getUninitializedMceEditors(mceParentElem) {
     console.debug('getUninitializedMceEditors: start ', mceParentElem);
     const mceEditorsToInit = [];
-    for (const editorArea of mceParentElem.querySelectorAll('textarea.mceEditor')) {
+    for (const editorArea of mceParentElem.querySelectorAll(
+        'textarea.mceEditor:net([data-cel-rte-state])')) {
       if (!editorArea.id) {
-        editorArea.writeAttribute('id', editorArea.name + 'Editor' + (++this.#editorCounter));
+        editorArea.setAttribute('id', editorArea.name + 'Editor' + (++this.#editorCounter));
       }
-      const notInitialized = !tinymce.get(editorArea.id);
-      console.log('getUninitializedMceEditors: found new editorArea ', editorArea.id,
-          notInitialized);
-      if (notInitialized) {
-        mceEditorsToInit.push(editorArea.id);
+      if (!tinymce.get(editorArea.id)) {
+        console.debug('getUninitializedMceEditors: found new editorArea ', editorArea.id);
+        mceEditorsToInit.push(editorArea);
+      } else {
+        console.debug('getUninitializedMceEditors: skip already initialized editorArea ',
+          editorArea.id);
       }
     }
     console.debug('getUninitializedMceEditors: returns ', mceParentElem, mceEditorsToInit);
@@ -153,17 +152,13 @@ class CelRteAdaptor {
   lazyLoadTinyMCE(mceParentElem) {
     this.#tinyReadyPromise.then((tinyConfig) => {
       console.debug('lazyLoadTinyMCE for', mceParentElem);
-      for (const editorAreaId of this.#getUninitializedMceEditors(mceParentElem)) {
-        if (!this.#mceEditorsToInit.includes(editorAreaId)) {
-          this.#mceEditorsToInit.push(editorAreaId);
-          console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorAreaId, mceParentElem);
-          tinymce.execCommand("mceAddEditor", false, {
-            'id' : editorAreaId,
-            'options' : tinyConfig
-          });
-        } else {
-          console.debug('lazyLoadTinyMCE: skip ', editorAreaId, mceParentElem);
-        }
+      for (const editorArea of this.#getUninitializedMceEditors(mceParentElem)) {
+        console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorArea.id, mceParentElem);
+        editorArea.setAttribute('cel-rte-state', 'initializing');
+        tinymce.execCommand("mceAddEditor", false, {
+          'id' : editorArea.id,
+          'options' : tinyConfig
+        });
       }
       console.debug('lazyLoadTinyMCE: finish', mceParentElem);
     }).catch((exp) => {
@@ -186,22 +181,23 @@ class CelRteAdaptor {
       body: params
     });
     if (response.ok) {
-      this.#tinyConfigObj = await response.json() ?? {};
+      const tinyConfigJson = await response.json() ?? {};
+      const tinyConfigObj = {}.
       console.log('tinymce6 config loaded: starting tiny');
-      this.addTinyConfigDefaults();
-      this.#tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
-      this.#tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
-      this.#tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
-      return this.#tinyConfigObj;
+      tinyConfigObj["setup"] = this.tinyMceSetupDoneHandler.bind(this);
+      tinyConfigObj["images_upload_handler"] = this.uploadImagesHandler.bind(this);
+      tinyConfigObj["file_picker_callback"] = this.filePickerHandler.bind(this);
+      return this.addTinyConfigDefaults(tinyConfigObj);
     } else {
       throw new Error('fetch failed: ', response.statusText);
     }
   }
 
-  addTinyConfigDefaults() {
+  addTinyConfigDefaults(tinyConfigObj) {
     for (const key in this.#tinyDefaults) {
-      this.#tinyConfigObj[key] = this.#tinyConfigObj[key] ?? this.#tinyDefaults[key];
+      tinyConfigObj[key] = tinyConfigObj[key] ?? this.#tinyDefaults[key];
     }
+    return tinyConfigObj;
   }
 }
 
@@ -216,21 +212,13 @@ class TinyMceLazyInitializer {
   initObserver() {
     console.debug("TinyMceLazyInitializer.initObserver: start initObserver");
     const config = { attributes: false, childList: true, subtree: true };  
-    this.#observer = new MutationObserver((mutationList) => this.mutationHandler(mutationList));  
+    this.#observer = new MutationObserver((mutationList) =>
+      mutationList.flatMap((mutation) => mutation.addedNodes)
+      .filter((newNode) => (newNode.nodeType === Node.ELEMENT_NODE))
+      .forEach((newNode) => this.#celRteAdaptor.lazyLoadTinyMCE(newNode)));
     this.#observer.observe(document.body, config);
   }
 
-  mutationHandler(mutationList) {
-    for (const mutation of mutationList) {
-      if (mutation.type === 'childList') {
-        for (const newNode of mutation.addedNodes) {
-          if (newNode.nodeType === Node.ELEMENT_NODE) {
-            this.#celRteAdaptor.lazyLoadTinyMCE(newNode);
-          }
-        }
-      }
-    }
-  }
 }
 
 class TabEditorTinyPlugin {
