@@ -44,14 +44,18 @@ class CelRteAdaptor {
   start(beforeTinyInitPromise) {
     this.#tinyConfigLoadedPromise = this.#initCelRTE6();
     this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromise);
-    this.#tinyConfigLoadedPromise.then((tinyConfig) => {
+    this.#setupFilePickerAndUploadHandler(this.#tinyConfigLoadedPromise);
+  }
+
+  #setupFilePickerAndUploadHandler(tinyConfigLoadedPromise) {
+    tinyConfigLoadedPromise.then((tinyConfig) => {
       this.#filePicker = new CelFilePicker(tinyConfig);
       this.#uploadHandler = new CelUploadHandler(tinyConfig.wiki_attach_path,
         tinyConfig.wiki_imagedownload_path);
     });
   }
 
-  getEditorInitPromises() {
+  get editorInitPromises() {
     return this.#editorInitPromises;
   }
 
@@ -59,19 +63,18 @@ class CelRteAdaptor {
     return this.#tinyReadyPromise;
   }
 
-  #getTinyReadyPromise(beforeTinyInitPromise) {
+  async #getTinyReadyPromise(beforeTinyInitPromise) {
     console.debug('getTinyReadyPromise start ');
-    return Promise.all([
-      this.#tinyConfigLoadedPromise,
-      this.#addTinyMceScript(),
-      ...beforeTinyInitPromise])
-    .then((values) => {
-      const tinyConfig = values[0];
-      console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
-      tinymce.init(tinyConfig);
-      console.debug('getTinyReadyPromise tinymce.init done.');
-      return tinyConfig;
-    });
+    const values_1 = await Promise.all([
+        this.#tinyConfigLoadedPromise,
+        this.#addTinyMceScript(),
+        ...beforeTinyInitPromise
+    ]);
+    const tinyConfig = values_1[0];
+    console.debug('getTinyReadyPromise tinymce.init ', tinymce, tinyConfig);
+    tinymce.init(tinyConfig);
+    console.debug('getTinyReadyPromise tinymce.init done.');
+    return tinyConfig;
   }
 
   #addTinyMceScript() {
@@ -224,7 +227,7 @@ class TabEditorTinyPlugin {
   delayedEditorOpeningPromiseHandler(event) {
     console.debug('delayedEditorOpeningPromiseHandler: start ', event.memo);
     const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
-    const editorFinishPromise = this.#celRteAdaptor.getEditorInitPromises();
+    const editorFinishPromise = this.#celRteAdaptor.editorInitPromises;
     event.memo.beforePromises.push(editorFinishPromise);
     console.debug('delayedEditorOpeningPromiseHandler: end ', mceParentElem);
   }
