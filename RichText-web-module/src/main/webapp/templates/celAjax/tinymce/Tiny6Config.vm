@@ -1,0 +1,103 @@
+## ***********************************************************************
+## tinyMCE_width and tinyMCE_height set by PrepareVelocityContextService
+## ***********************************************************************
+$!services.rteconfig.setRteConfigHint("tinymce6")
+#set($rtePluginsPre = ["preview","searchreplace","autolink","directionality","visualblocks","visualchars","fullscreen","image","link","media","template","codesample","table","charmap","pagebreak","nonbreaking","anchor","insertdatetime","advlist","lists","wordcount","help", "code"])
+#set($rtePluginsConfig = $services.rteconfig.getRTEConfigField('plugins'))
+#set($rteOmitPlugins = [])
+#if("$!rtePluginsConfig" != '')
+  #foreach($oneRtePlugin in $rtePluginsConfig.split('[,| ]'))
+    #if($oneRtePlugin.startsWith('-'))
+      #set($!dev = $rteOmitPlugins.add($oneRtePlugin.replaceFirst('-','')))
+    #elseif("$!oneRtePlugin" != '')
+      #set($!dev = $rtePluginsPre.add($oneRtePlugin))
+    #end
+  #end
+#end
+#set($rtePlugins = '')
+  #foreach($oneRtePlugin in $rtePluginsPre)
+    #if(("$!oneRtePlugin" != '') && !$rteOmitPlugins.contains($oneRtePlugin))
+      #set($rtePlugins = "$!{rtePlugins} $!oneRtePlugin")
+    #end
+  #end
+## lookup the rte valid elements in XWiki- and WebPreferences and
+## default back to the standard configuration
+#set($rte_valid_elements = $services.rteconfig.getRTEConfigField('valid_elements'))
+## lookup the rte invalid elements in XWiki- and WebPreferences and
+## default back to the standard configuration
+#set($rte_invalid_elements = $services.rteconfig.getRTEConfigField('invalid_elements'))
+## lookup the rte button layout in XWiki- and WebPreferences and
+## default back to the standard fields
+#set($rteRows = [])
+#foreach($rowNum in [1,2,3])
+  #set($rte_row = $services.rteconfig.getRTEConfigField("row_$!{rowNum}"))
+  #if("$!rte_row" != '')
+    #set($!devNull = $rteRows.add($rte_row))
+  #end
+#end
+## get other rte preferences
+#set($content_css_filenameURL = [ "$services.celementsweb.getSkinFile(':celRTE/content-css/celements2-content.css', 'file')" ])
+#foreach($cssObj in $services.css.getRTEContentCSS())
+#if("$!{cssObj.getCSS()}" != '')
+    #set($!devNull = $content_css_filenameURL.add("$!{cssObj.getCSS()}"))
+  #end
+#end
+## file base link, file picker link
+#if(("$!xwiki.getSpacePreference('cel_centralfilebase')" != '') && ("$!xwiki.getSpacePreference('cel_centralfilebase')" != '-'))
+  #set($wiki_filbase_path = "$!xwiki.getSpacePreference('cel_centralfilebase')")
+  #set($wiki_filbase_path_ref = $services.reference.resolve($wiki_filbase_path))
+#else
+  #set($wiki_filbase_path_ref = $doc.documentReference)
+  #set($wiki_filbase_path = $services.reference.serialize($wiki_filbase_path_ref, 'local'))
+#end
+#set($attachmentPath = "$!services.url.getURL($wiki_filbase_path_ref, 'view')")
+#set($attachmentDLPath = "$!services.url.getURL($wiki_filbase_path_ref, 'download')")
+#set($linkPickerSpaces = "$!linkPickerSpaces") ## linkPickerSpaces could be undefined
+#set($blogPageDocRef = $services.celblog.getBlogDocRefByBlogSpace("$doc.space"))
+#if("$!blogPageDocRef" != '')
+  #set($linkPickerSpaces = "$!{blogPageDocRef.lastSpaceReference}")
+#end
+##FIXME $linkPickerSpace must be given by input parameter depending on rte context
+#set($linkPickerSpace = "$doc.space")
+#if("$!linkPickerSpaces" != '')
+  #set($linkPickerSpace = "$!linkPickerSpaces")
+#end
+#set($parentSpace = "$!{xwiki.getSpacePreference('parent')}")
+#if(("$!parentSpace" != '') && ($linkPickerSpace.indexOf("$!{parentSpace}") < 0))
+  #set($linkPickerSpace = "$!linkPickerSpace,$!{parentSpace}")
+#end
+##
+#set($allLinkPickerSpaces = "$!linkPickerSpace,$!services.rteconfig.getRTEConfigField('link_picker_spaces')")
+#set($allLinkPickerSpaces = $allLinkPickerSpaces.replaceAll(',,|^,|,$', ''))
+##
+## start writing JSON
+#set($jsonBuilder = $services.json.newBuilder())##
+$jsonBuilder.openDictionary()##
+$jsonBuilder.addProperty("selector", "textarea.tinyMCE,textarea.mceEditor")##
+$jsonBuilder.addProperty("body_class", "mceContentBody")##
+$jsonBuilder.addProperty("language", "$!admin_language")##
+$jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
+$jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
+$jsonBuilder.addProperty("height", "$!tinyMCE_height")##
+$jsonBuilder.addProperty("width", "$!tinyMCE_width")##
+$jsonBuilder.addProperty("plugins", "$!rtePlugins")##
+$jsonBuilder.openArray("toolbar")##
+#foreach($rteRowLayout in $rteRows)
+  $jsonBuilder.addValue($rteRowLayout)
+#end
+$jsonBuilder.closeArray()##
+$jsonBuilder.openArray("content_css")##
+#foreach($cssURL in $content_css_filenameURL)
+  $jsonBuilder.addValue($cssURL)
+#end
+$jsonBuilder.closeArray()##
+## file base link, file picker link
+$jsonBuilder.addProperty("filebaseFN", "$!wiki_filbase_path")
+$jsonBuilder.addProperty("attach_path", "$attachmentPath")##
+$jsonBuilder.addProperty("download_path", "$attachmentDLPath")##
+$jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
+$jsonBuilder.addProperty("wiki_linkpicker_baseurl", "$doc.getURL('view')")##
+$jsonBuilder.openProperty("style_formats")##
+$jsonBuilder.addValue($services.rteconfig.getRteJsonConfigField("style_formats"))##
+$jsonBuilder.closeDictionary()## tiny6 config dictionary
+$jsonBuilder.getJSON()

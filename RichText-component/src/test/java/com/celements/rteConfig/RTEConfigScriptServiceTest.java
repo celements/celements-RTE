@@ -14,19 +14,19 @@ import org.xwiki.script.service.ScriptService;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.emptycheck.internal.IDefaultEmptyDocStrategyRole;
+import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.reference.RefBuilder;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.web.Utils;
 
 public class RTEConfigScriptServiceTest extends AbstractComponentTest {
 
-  private IDefaultEmptyDocStrategyRole emptyStrategyMock;
   private RTEConfigScriptService rteConfigScriptSrv;
   private RteConfigRole rteConfigSrvMock;
 
   @Before
   public void setUp_RTEConfigScriptServiceTest() throws Exception {
-    emptyStrategyMock = registerComponentMock(IDefaultEmptyDocStrategyRole.class);
+    registerComponentMocks(IDefaultEmptyDocStrategyRole.class, IModelAccessFacade.class);
     rteConfigSrvMock = registerComponentMock(RteConfigRole.class, "rteConfigMock");
     rteConfigScriptSrv = (RTEConfigScriptService) Utils.getComponent(ScriptService.class,
         "rteconfig");
@@ -85,7 +85,8 @@ public class RTEConfigScriptServiceTest extends AbstractComponentTest {
   @Test
   public void test_isEmptyRTEString() {
     final String rteContent = "<p>The non empty Content</p>";
-    expect(emptyStrategyMock.isEmptyRTEString(eq(rteContent))).andReturn(false);
+    expect(getMock(IDefaultEmptyDocStrategyRole.class).isEmptyRTEString(eq(rteContent)))
+        .andReturn(false);
     replayDefault();
     assertFalse(rteConfigScriptSrv.isEmptyRTEString(rteContent));
     verifyDefault();

@@ -7,3 +7,5 @@ com.celements.rte.RteDefaultImplementation
 com.celements.rte.RteTinyMce3
 com.celements.tinymce4.TinyMce4Config
 com.celements.tinymce4.RteTinyMce4
+com.celements.tinymce6.TinyMce6Config
+com.celements.tinymce6.RteTinyMce6
