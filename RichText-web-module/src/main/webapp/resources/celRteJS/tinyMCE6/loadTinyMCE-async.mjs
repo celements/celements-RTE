@@ -202,7 +202,7 @@ class TinyMceLazyInitializer {
   initObserver() {
     console.trace("TinyMceLazyInitializer.initObserver: start initObserver");
     this.#observer = new MutationObserver(mutationList =>
-      mutationList.flatMap(mutation => mutation.addedNodes)
+      mutationList.flatMap(mutation => Array.from(mutation.addedNodes))
       .filter(newNode => (newNode.nodeType === Node.ELEMENT_NODE))
       .forEach(newNode => this.#celRteAdaptor.lazyLoadTinyMCE(newNode)));
     this.#observer.observe(document.body, {
