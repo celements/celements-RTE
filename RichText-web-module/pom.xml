@@ -59,8 +59,8 @@
     <finalName>cel-richtext-web</finalName>
     <plugins>
       <plugin>
-          <groupId>com.jarslab.maven</groupId>
-          <artifactId>babel-maven-plugin</artifactId>
+        <groupId>com.jarslab.maven</groupId>
+        <artifactId>babel-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
