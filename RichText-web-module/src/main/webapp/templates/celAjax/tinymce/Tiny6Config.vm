@@ -71,7 +71,7 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #set($allLinkPickerSpaces = $allLinkPickerSpaces.replaceAll(',,|^,|,$', ''))
 ##
 #set($pageTypeRef = $services.pageType.getPageTypeRef($doc.documentReference))
-#set($bodyClasses = "mceContentBody $!{pageTypeRef.configName}")
+#set($bodyClasses = "mceContentBody pageType_$!{pageTypeRef.configName}")
 #if("$!{services.layout.getPageLayoutForDoc($doc.documentReference)}" != '')
 #set($bodyClasses = " layout_$!{services.layout.getPageLayoutForDoc($doc.documentReference)}")
 #end
