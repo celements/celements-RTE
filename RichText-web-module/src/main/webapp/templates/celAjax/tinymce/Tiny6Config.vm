@@ -73,7 +73,7 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #set($pageTypeRef = $services.pageType.getPageTypeRef($doc.documentReference))
 #set($bodyClasses = "mceContentBody pageType_$!{pageTypeRef.configName}")
 #if("$!{services.layout.getPageLayoutForDoc($doc.documentReference)}" != '')
-#set($bodyClasses = " layout_$!{services.layout.getPageLayoutForDoc($doc.documentReference)}")
+  #set($bodyClasses = "$!{bodyClasses} layout_$!{services.layout.getPageLayoutForDoc($doc.documentReference)}")
 #end
 ## start writing JSON
 #set($jsonBuilder = $services.json.newBuilder())##
