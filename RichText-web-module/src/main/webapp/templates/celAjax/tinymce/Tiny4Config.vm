@@ -129,10 +129,16 @@ $!services.rteconfig.setRteConfigHint("tinymce4")
 #set($filebaseURL = "$!{filebaseURL}&src_doc=${filePickerSpace}.${filePickerDoc}&columns=10")
 #set($filebaseURL = "$!{filebaseURL}&root=${filePickerSpace}&hasUpload=$hasUpload")
 ##
+#set($pageTypeRef = $services.pageType.getPageTypeRef($doc.documentReference))
+#set($bodyClasses = "mceContentBody pageType_$!{pageTypeRef.configName}")
+#if("$!{services.layout.getPageLayoutForDoc($doc.documentReference)}" != '')
+  #set($bodyClasses = "$!{bodyClasses} layout_$!{services.layout.getPageLayoutForDoc($doc.documentReference)}")
+#end
 ## start writing JSON
 #set($jsonBuilder = $services.json.newBuilder())##
 $jsonBuilder.openDictionary()##
 $jsonBuilder.addProperty("selector", "textarea.tinyMCE,textarea.mceEditor")##
+$jsonBuilder.addProperty("body_class", "$!{bodyClasses.trim()}")##
 $jsonBuilder.addProperty("language", "$!admin_language")##
 $jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
 $jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
