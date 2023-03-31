@@ -20,6 +20,7 @@
 package com.celements.rteConfig.classes;
 
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
@@ -27,11 +28,26 @@ import org.xwiki.model.reference.WikiReference;
 @ComponentRole
 public interface IRTEConfigClassConfig {
 
-  public static final String RTE_CONFIG_TYPE_PRPOP_CLASS_DOC = "RTEConfigTypePropertiesClass";
-  public static final String RTE_CONFIG_TYPE_PRPOP_CLASS_SPACE = "Classes";
+  String RTE_CONFIG_CLASS_SPACE = "Classes";
+  String RTE_CONFIG_TYPE_CLASS_NAME = "RTEConfigTypeClass";
+  ClassReference RTE_CFG_TYPE_CLASS_REF = new ClassReference(
+      RTE_CONFIG_CLASS_SPACE, RTE_CONFIG_TYPE_CLASS_NAME);
 
-  public DocumentReference getRTEConfigTypePropertiesClassRef(EntityReference inRef);
+  String RTE_CONFIG_TYPE_PRPOP_CLASS_DOC = "RTEConfigTypePropertiesClass";
+  String RTE_CONFIG_TYPE_PRPOP_CLASS_SPACE = RTE_CONFIG_CLASS_SPACE;
+  ClassReference RTE_CFG_TYPE_PROP_CLASS_REF = new ClassReference(
+      RTE_CONFIG_CLASS_SPACE, RTE_CONFIG_TYPE_PRPOP_CLASS_DOC);
 
-  public DocumentReference getRTEConfigTypePropertiesClassRef(WikiReference wikiRef);
+  /**
+   * @deprecated since 5.10 instead use {@link #RTE_CFG_TYPE_PROP_CLASS_REF}
+   */
+  @Deprecated
+  DocumentReference getRTEConfigTypePropertiesClassRef(EntityReference inRef);
+
+  /**
+   * @deprecated since 5.10 instead use {@link #RTE_CFG_TYPE_PROP_CLASS_REF}
+   */
+  @Deprecated
+  DocumentReference getRTEConfigTypePropertiesClassRef(WikiReference wikiRef);
 
 }
