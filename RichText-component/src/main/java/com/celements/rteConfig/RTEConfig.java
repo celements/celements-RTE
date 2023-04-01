@@ -19,7 +19,6 @@
  */
 package com.celements.rteConfig;
 
-import static com.celements.common.MoreObjectsCel.*;
 import static com.celements.rteConfig.classes.IRTEConfigClassConfig.*;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.base.Predicates.*;
@@ -43,8 +42,6 @@ import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 import com.celements.common.MoreOptional;
@@ -59,6 +56,9 @@ import com.celements.pagetype.PageTypeReference;
 import com.celements.pagetype.service.IPageTypeResolverRole;
 import com.celements.pagetype.xobject.XObjectPageTypeUtilsRole;
 import com.celements.sajson.JsonBuilder;
+import com.celements.search.lucene.ILuceneSearchService;
+import com.celements.search.lucene.LuceneSearchException;
+import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.web.CelConstant;
 import com.celements.web.classcollections.IOldCoreClassConfig;
 import com.google.common.base.Strings;
@@ -89,6 +89,9 @@ public class RTEConfig implements RteConfigRole {
   @Requirement
   private QueryManager queryManager;
 
+  @Requirement
+  private ILuceneSearchService searchService;
+
   @Requirement(CelementsAllPropertiesConfigurationSource.NAME)
   private ConfigurationSource propCfgSrc;
 
@@ -115,33 +118,33 @@ public class RTEConfig implements RteConfigRole {
   }
 
   private Optional<String> getFieldFromCurrentDoc(String name) {
-    return context.getDocument().flatMap(doc -> getRTEConfigFieldFromObj(name, doc));
+    return context.getDocument().flatMap(doc -> getFieldFromObj(name, doc));
   }
 
   private Optional<String> getFieldFromPageType(String name) {
     PageTypeReference pageTypeRef = pageTypeResolver.resolvePageTypeRefForCurrentDoc();
     DocumentReference pageTypeDocRef = xobjectPageTypeUtils.getDocRefForPageType(pageTypeRef);
     return modelAccess.getDocumentOpt(pageTypeDocRef)
-        .flatMap(pageTypeDoc -> getRTEConfigFieldFromObj(name, pageTypeDoc));
+        .flatMap(pageTypeDoc -> getFieldFromObj(name, pageTypeDoc));
   }
 
   Optional<String> getFieldFromPrefDoc(String name, Optional<DocumentReference> docRef) {
     return docRef.flatMap(modelAccess::getDocumentOpt)
-        .flatMap(doc -> getRTEConfigFieldFromObj(name, doc)
+        .flatMap(doc -> getFieldFromObj(name, doc)
             .map(Optional::of) // replace with #or in Java9+
-            .orElseGet(() -> getStringValue("rte_" + name, XWIKI_PREF_CLASS_REF, doc)));
+            .orElseGet(() -> getStringValue(doc, XWIKI_PREF_CLASS_REF, "rte_" + name)));
   }
 
-  Optional<String> getRTEConfigFieldFromObj(String name, XWikiDocument doc) {
-    return getStringValue(CONFIG_PROP_NAME, RTE_CFG_TYPE_CLASS_REF, doc)
+  Optional<String> getFieldFromObj(String name, XWikiDocument doc) {
+    return getStringValue(doc, RTE_CFG_TYPE_CLASS_REF, CONFIG_PROP_NAME)
         .flatMap(this::resolve)
         .flatMap(modelAccess::getDocumentOpt)
-        .flatMap(configDoc -> getStringValue(name, RTE_CFG_TYPE_PROP_CLASS_REF, configDoc))
+        .flatMap(configDoc -> getStringValue(configDoc, RTE_CFG_TYPE_PROP_CLASS_REF, name))
         .map(Optional::of) // replace with #or in Java9+
-        .orElseGet(() -> getStringValue(name, RTE_CFG_TYPE_PROP_CLASS_REF, doc));
+        .orElseGet(() -> getStringValue(doc, RTE_CFG_TYPE_PROP_CLASS_REF, name));
   }
 
-  Optional<String> getStringValue(String name, ClassReference classRef, XWikiDocument doc) {
+  Optional<String> getStringValue(XWikiDocument doc, ClassReference classRef, String name) {
     return XWikiObjectFetcher.on(doc).filter(classRef).findFirst()
         .map(prefObj -> prefObj.getStringValue(name))
         .filter(StringUtils::isNotBlank);
@@ -161,21 +164,17 @@ public class RTEConfig implements RteConfigRole {
   @Override
   public List<DocumentReference> getRTEConfigsList() {
     try {
-      return queryManager.createQuery(getRteConfigsXWQL(), Query.XWQL)
-          .execute().stream()
-          .flatMap(tryCast(String.class))
-          .map(this::resolve)
-          .flatMap(MoreOptional::stream)
+      LuceneQuery query = searchService.createQuery();
+      query.setWiki(context.getWikiRef());
+      query.add(searchService.createObjectRestriction(RTE_CFG_TYPE_PROP_CLASS_REF));
+      return searchService.searchWithoutChecks(query)
+          .streamResults(DocumentReference.class)
+          .distinct()
           .collect(toList());
-    } catch (QueryException exp) {
+    } catch (LuceneSearchException exp) {
       LOGGER.error("Failed to get RTE-Configs list.", exp);
       return new ArrayList<>();
     }
-  }
-
-  String getRteConfigsXWQL() {
-    return "from doc.object(" + RTE_CFG_TYPE_PROP_CLASS_REF.serialize() + ") as rteConfig"
-        + " where doc.translation = 0";
   }
 
   @Override

@@ -25,6 +25,7 @@ import static com.celements.rteConfig.classes.IRTEConfigClassConfig.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -38,6 +39,10 @@ import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.PageTypeReference;
 import com.celements.pagetype.service.IPageTypeResolverRole;
+import com.celements.search.lucene.ILuceneSearchService;
+import com.celements.search.lucene.LuceneSearchResult;
+import com.celements.search.lucene.query.LuceneQuery;
+import com.celements.search.lucene.query.QueryRestriction;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -49,19 +54,18 @@ public class RTEConfigTest extends AbstractComponentTest {
   private XWikiDocument webPrefDoc;
   private XWikiDocument pageTypeCfgDoc;
   private IModelAccessFacade modelAccessMock;
-  private IPageTypeResolverRole pageTypeResvMock;
 
   @Before
   public void prepare() throws Exception {
-    pageTypeResvMock = registerComponentMock(IPageTypeResolverRole.class);
     modelAccessMock = registerComponentMock(IModelAccessFacade.class);
+    registerComponentMocks(IPageTypeResolverRole.class, ILuceneSearchService.class);
     registerComponentMock(ConfigurationSource.class, CelementsAllPropertiesConfigurationSource.NAME,
         getConfigurationSource());
     config = (RTEConfig) Utils.getComponent(RteConfigRole.class);
     getContext().setDoc(new XWikiDocument(new DocumentReference(getContext().getDatabase(),
         "TestSpace", "TestDoc")));
     webPrefDoc = new XWikiDocument(config.getWebPrefDoc().get());
-    expect(pageTypeResvMock.resolvePageTypeRefForCurrentDoc())
+    expect(getMock(IPageTypeResolverRole.class).resolvePageTypeRefForCurrentDoc())
         .andReturn(new PageTypeReference("RichText", "xobject", ImmutableList.of("pagetype")))
         .anyTimes();
     pageTypeCfgDoc = new XWikiDocument(new DocumentReference(getContext().getDatabase(),
@@ -239,8 +243,7 @@ public class RTEConfigTest extends AbstractComponentTest {
     confDoc.addXObject(confObj);
     expect(modelAccessMock.getDocumentOpt(eq(confDocRef))).andReturn(Optional.of(confDoc));
     replayDefault();
-    assertEquals("testvalue", config.getRTEConfigFieldFromObj(
-        "testprop", getContext().getDoc()).orElse(""));
+    assertEquals("testvalue", config.getFieldFromObj("testprop", getContext().getDoc()).orElse(""));
     verifyDefault();
   }
 
@@ -251,15 +254,24 @@ public class RTEConfigTest extends AbstractComponentTest {
     confObj.setStringValue("testprop", "testvalue");
     getContext().getDoc().addXObject(confObj);
     replayDefault();
-    assertEquals("testvalue", config.getRTEConfigFieldFromObj(
-        "testprop", getContext().getDoc()).orElse(""));
+    assertEquals("testvalue", config.getFieldFromObj("testprop", getContext().getDoc()).orElse(""));
     verifyDefault();
   }
 
   @Test
-  public void test_getRteConfigsXWQL() {
-    assertEquals("from doc.object(Classes.RTEConfigTypePropertiesClass) as rteConfig"
-        + " where doc.translation = 0", config.getRteConfigsXWQL());
+  public void test_getRTEConfigsList() throws Exception {
+    List<DocumentReference> result = ImmutableList.of(getContext().getDoc().getDocumentReference());
+    LuceneQuery query = new LuceneQuery();
+    expect(getMock(ILuceneSearchService.class).createQuery()).andReturn(query);
+    expect(getMock(ILuceneSearchService.class).createObjectRestriction(RTE_CFG_TYPE_PROP_CLASS_REF))
+        .andReturn(new QueryRestriction(" ", " "));
+    LuceneSearchResult resultMock = createMockAndAddToDefault(LuceneSearchResult.class);
+    expect(getMock(ILuceneSearchService.class).searchWithoutChecks(same(query)))
+        .andReturn(resultMock);
+    expect(resultMock.streamResults(DocumentReference.class)).andReturn(result.stream());
+    replayDefault();
+    assertEquals(result, config.getRTEConfigsList());
+    verifyDefault();
   }
 
 }
