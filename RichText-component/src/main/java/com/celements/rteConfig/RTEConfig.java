@@ -42,7 +42,6 @@ import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.query.QueryManager;
 
 import com.celements.common.MoreOptional;
 import com.celements.configuration.CelementsAllPropertiesConfigurationSource;
@@ -85,9 +84,6 @@ public class RTEConfig implements RteConfigRole {
 
   @Requirement
   private XObjectPageTypeUtilsRole xobjectPageTypeUtils;
-
-  @Requirement
-  private QueryManager queryManager;
 
   @Requirement
   private ILuceneSearchService searchService;
