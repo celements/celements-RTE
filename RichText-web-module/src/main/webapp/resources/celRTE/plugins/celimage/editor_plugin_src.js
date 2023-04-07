@@ -17,7 +17,7 @@
           return;
 
         ed.windowManager.open({
-          file : url + '/image.htm?version=202205180800',
+          file : url + '/image.htm?version=202304062300',
           width : 743 + parseInt(ed.getLang('celimage.delta_width', 0)),
           height : 670 + parseInt(ed.getLang('celimage.delta_height', 0)),
           inline : 1
