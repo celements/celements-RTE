@@ -51,6 +51,7 @@ class CelRteAdaptor {
   start(beforeTinyInitPromiseArray) {
     this.#tinyConfigLoadedPromise = this.#initCelRTE6();
     this.#tinyReadyPromise = this.#getTinyReadyPromise(beforeTinyInitPromiseArray);
+    console.log('DEBUG start: tinyReadyPromise', this.#tinyReadyPromise);
     this.#setupFilePickerAndUploadHandler(this.#tinyConfigLoadedPromise);
   }
 
