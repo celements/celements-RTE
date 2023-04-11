@@ -57,13 +57,11 @@
   </dependencies>
   <build>
     <finalName>cel-richtext-web</finalName>
-<!-- XXX deactivate for debugging
     <plugins>
       <plugin>
         <groupId>com.jarslab.maven</groupId>
         <artifactId>babel-maven-plugin</artifactId>
       </plugin>
     </plugins>
--->
   </build>
 </project>
