@@ -148,7 +148,7 @@ class CelRteAdaptor {
 
   async lazyLoadTinyMCE(mceParentElem) {
     try {
-      const tinyConfig = await this.#tinyReadyPromise();
+      const tinyConfig = await this.#tinyReadyPromise;
       console.debug('lazyLoadTinyMCE for', mceParentElem);
       for (const editorArea of this.#getUninitializedMceEditors(mceParentElem)) {
         console.log('lazyLoadTinyMCE: mceAddEditor for editorArea', editorArea.id, mceParentElem);
