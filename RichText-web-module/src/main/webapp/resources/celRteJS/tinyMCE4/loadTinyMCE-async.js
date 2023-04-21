@@ -89,6 +89,8 @@
     try {
       const editor = event.target;
       console.debug('celFinishTinyMCEStart: start', event);
+      console.debug('DEBUG editor.getElement().className', editor.getElement().className,
+        editor.getContainer().className);
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });
