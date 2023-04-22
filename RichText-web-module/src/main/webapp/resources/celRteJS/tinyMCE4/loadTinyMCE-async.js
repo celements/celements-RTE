@@ -92,8 +92,8 @@
       const textAreasClassNames = editor.getElement().className.split(' ')
         .filter(cssClass => cssClass.startsWith('celEditorBody_'));
       console.debug('DEBUG textAreasClassNames', textAreasClassNames);
-      console.debug('DEBUG editor.getContainer()', editor.getContainer());
-      editor.getContainer().className += ' ' + textAreasClassNames.join(' ');
+      console.debug('DEBUG editor.getBody()', editor.getBody());
+      editor.getBody().className  += ' ' + textAreasClassNames.join(' ');
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });
