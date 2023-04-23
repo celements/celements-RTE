@@ -118,9 +118,9 @@ class CelRteAdaptor {
       console.debug("tinyMceSetupDoneHandler: register 'init' listener for editor", editor.id);
       editor.on('init', (ev) => {
         console.debug("tinyMceSetupDoneHandler: on 'init' for editor done.", editor.id);
-        const origElemClassNames = editor.getElement().className.split(' ')
-          .filter(cssClass => cssClass.startsWith('celEditorBody_'));
-        editor.getBody().className  += ' ' + origElemClassNames.join(' ');
+      [...editor.getElement().classList]
+        .filter(cssClass => cssClass.startsWith('celEditorBody_'))
+        .forEach(cssClass => editor.getBody().classList.add(cssClass));
         document.getElementById(editor.id).setAttribute('cel-rte-state', 'initialized');
         resolve(ev.target);
       });
