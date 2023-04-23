@@ -89,6 +89,9 @@
     try {
       const editor = event.target;
       console.debug('celFinishTinyMCEStart: start', event);
+      [...editor.getElement().classList]
+        .filter(cssClass => cssClass.startsWith('celEditorBody_'))
+        .forEach(cssClass => editor.getBody().classList.add(cssClass));
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });
