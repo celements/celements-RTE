@@ -147,6 +147,8 @@ $jsonBuilder.addProperty("height", "$!tinyMCE_height")##
 $jsonBuilder.addProperty("width", "$!tinyMCE_width")##
 $jsonBuilder.addProperty("menubar", false)##
 $jsonBuilder.addProperty("branding", false)##
+$jsonBuilder.addProperty("relative_urls", false)##
+$jsonBuilder.addProperty("remove_script_host", true)##
 $jsonBuilder.addProperty("plugins", "$!rtePlugins")##
 $jsonBuilder.openProperty("external_plugins")##
 $jsonBuilder.openDictionary()##
