@@ -85,6 +85,8 @@ $jsonBuilder.addProperty("valid_elements", "$!rte_valid_elements")##
 $jsonBuilder.addProperty("invalid_elements", "$!rte_invalid_elements")##
 $jsonBuilder.addProperty("height", "$!tinyMCE_height")##
 $jsonBuilder.addProperty("width", "$!tinyMCE_width")##
+$jsonBuilder.addProperty("relative_urls", false)##
+$jsonBuilder.addProperty("remove_script_host", true)##
 $jsonBuilder.addProperty("plugins", "$!rtePlugins")##
 $jsonBuilder.openArray("toolbar")##
 #foreach($rteRowLayout in $rteRows)
