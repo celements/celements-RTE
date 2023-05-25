@@ -265,7 +265,7 @@ public class RTEConfigTest extends AbstractComponentTest {
     expect(getMock(ILuceneSearchService.class).createQuery()).andReturn(query);
     expect(getMock(ILuceneSearchService.class).createObjectRestriction(RTE_CFG_TYPE_PROP_CLASS_REF))
         .andReturn(new QueryRestriction(" ", " "));
-    LuceneSearchResult resultMock = createMockAndAddToDefault(LuceneSearchResult.class);
+    LuceneSearchResult resultMock = createDefaultMock(LuceneSearchResult.class);
     expect(getMock(ILuceneSearchService.class).searchWithoutChecks(same(query)))
         .andReturn(resultMock);
     expect(resultMock.streamResults(DocumentReference.class)).andReturn(result.stream());
