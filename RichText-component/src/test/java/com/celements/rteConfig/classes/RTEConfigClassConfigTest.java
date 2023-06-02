@@ -19,7 +19,6 @@
  */
 package com.celements.rteConfig.classes;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -43,10 +42,10 @@ public class RTEConfigClassConfigTest extends AbstractComponentTest {
 
   @Test
   public void testGetRTEConfigTypePropertiesClassRefEntityReference() {
-    EntityReference inRef = new EntityReference("xwikiDb", EntityType.WIKI);
+    EntityReference inRef = new EntityReference("xwikidb", EntityType.WIKI);
     replayDefault();
     DocumentReference classRef = rteConfigClassCfg.getRTEConfigTypePropertiesClassRef(inRef);
-    assertEquals("xwikiDb", classRef.extractReference(EntityType.WIKI).getName());
+    assertEquals("xwikidb", classRef.extractReference(EntityType.WIKI).getName());
     assertEquals(IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_SPACE, classRef.extractReference(
         EntityType.SPACE).getName());
     assertEquals(IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_DOC, classRef.getName());
@@ -55,10 +54,10 @@ public class RTEConfigClassConfigTest extends AbstractComponentTest {
 
   @Test
   public void testGetRTEConfigTypePropertiesClassRefWikiReference() {
-    WikiReference inRef = new WikiReference("xwikiDb");
+    WikiReference inRef = new WikiReference("xwikidb");
     replayDefault();
     DocumentReference classRef = rteConfigClassCfg.getRTEConfigTypePropertiesClassRef(inRef);
-    assertEquals("xwikiDb", classRef.extractReference(EntityType.WIKI).getName());
+    assertEquals("xwikidb", classRef.extractReference(EntityType.WIKI).getName());
     assertEquals(IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_SPACE, classRef.extractReference(
         EntityType.SPACE).getName());
     assertEquals(IRTEConfigClassConfig.RTE_CONFIG_TYPE_PRPOP_CLASS_DOC, classRef.getName());
