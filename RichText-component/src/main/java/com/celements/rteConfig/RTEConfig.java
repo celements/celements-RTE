@@ -127,8 +127,7 @@ public class RTEConfig implements RteConfigRole {
   Optional<String> getFieldFromPrefDoc(String name, Optional<DocumentReference> docRef) {
     return docRef.flatMap(modelAccess::getDocumentOpt)
         .flatMap(doc -> getFieldFromObj(name, doc)
-            .map(Optional::of) // replace with #or in Java9+
-            .orElseGet(() -> getStringValue(doc, XWIKI_PREF_CLASS_REF, "rte_" + name)));
+            .or(() -> getStringValue(doc, XWIKI_PREF_CLASS_REF, "rte_" + name)));
   }
 
   Optional<String> getFieldFromObj(String name, XWikiDocument doc) {
@@ -136,8 +135,7 @@ public class RTEConfig implements RteConfigRole {
         .flatMap(this::resolve)
         .flatMap(modelAccess::getDocumentOpt)
         .flatMap(configDoc -> getStringValue(configDoc, RTE_CFG_TYPE_PROP_CLASS_REF, name))
-        .map(Optional::of) // replace with #or in Java9+
-        .orElseGet(() -> getStringValue(doc, RTE_CFG_TYPE_PROP_CLASS_REF, name));
+        .or(() -> getStringValue(doc, RTE_CFG_TYPE_PROP_CLASS_REF, name));
   }
 
   Optional<String> getStringValue(XWikiDocument doc, ClassReference classRef, String name) {
