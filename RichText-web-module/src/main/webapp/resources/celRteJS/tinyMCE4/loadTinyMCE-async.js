@@ -66,7 +66,8 @@
    * loading in struct layout editor
    **/
   const initCelRTE4InStructEditor = function(event) {
-    const structManager = event?.detail?.structEditorManager ?? window.celStructEditorManager;
+    const structManager = (event && event.detail && event.detail.structEditorManager)
+      ? event.detail.structEditorManager : window.celStructEditorManager;
     if (structManager) {
       if (!structManager.isStartFinished()) {
         console.log('structEditorManager not initialized: register for finishLoading');
