@@ -65,8 +65,9 @@
   /**
    * loading in struct layout editor
    **/
-  (function(structManager){
-    console.log('loadTinyMCE async: start');
+  const initCelRTE4InStructEditor = function(event) {
+    const structManager = (event && event.detail && event.detail.structEditorManager)
+      ? event.detail.structEditorManager : window.celStructEditorManager;
     if (structManager) {
       if (!structManager.isStartFinished()) {
         console.log('structEditorManager not initialized: register for finishLoading');
@@ -77,10 +78,10 @@
         initCelRTE4();
       }
     } else {
-      console.warn('No struct editor manager found -> Failed to initialize tinymce4.');
+      document.body.addEventListener('structEdit:finishedInitialize', initCelRTE4InStructEditor);
+      console.trace('No struct editor manager found, waiting for structEdit:finishedInitialize');
     }
-    console.log('loadTinyMCE async: end');
-  })(window.celStructEditorManager);
+  };
 
   /**
    * loading in overlay TabEditor
@@ -153,7 +154,11 @@
     initCelRTE4();
   };
 
-  $j(document).ready(() => {
+  const onReady = callback => (document.readyState === 'loading')
+    ? document.addEventListener('DOMContentLoaded', callback)
+    : callback();
+
+  onReady(() => {
     console.log("tinymce4: register document ready...");
     $(document.body).observe('celements:contentChanged', event => lazyLoadTinyMCE(event.target));
     if ($('tabMenuPanel')) {
@@ -164,6 +169,7 @@
       console.log('loadTinyMCE-async on ready: before register initCelRTE4Listener');
       getCelementsTabEditor().addAfterInitListener(initCelRTE4Listener);
     }
+    initCelRTE4InStructEditor();
   });
-  
+
 })(window);

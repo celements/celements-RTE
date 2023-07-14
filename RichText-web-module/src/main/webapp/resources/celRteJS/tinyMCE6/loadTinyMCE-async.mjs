@@ -234,11 +234,15 @@ class TabEditorTinyPlugin {
   }
 
   async #initTabEditorIfLoaded() {
-    console.trace('#initTabEditorIfLoaded start');
-    await this.#afterTabEditorInitializedPromise();
-    console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
-    window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
-      this.delayedEditorOpeningPromiseHandler.bind(this));
+    try {
+      console.trace('#initTabEditorIfLoaded start');
+      await this.#afterTabEditorInitializedPromise();
+      console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
+      window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
+        this.delayedEditorOpeningPromiseHandler.bind(this));
+    } catch (error) {
+      console.debug('#initTabEditorIfLoaded', error);
+    }
   }
 
   #isInTabEditor() {
@@ -247,7 +251,7 @@ class TabEditorTinyPlugin {
 
   #afterTabEditorInitializedPromise() {
     if (!this.#isInTabEditor()) {
-      return Promise.reject();
+      return Promise.reject('Not in Tab Editor');
     } else if (typeof window.getCelementsTabEditor === 'function') {
       return Promise.resolve();
     } else {
