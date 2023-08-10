@@ -31,7 +31,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>celements-richtext</artifactId>
-  <version>6.0</version>
+  <version>6.1-SNAPSHOT</version>
   <name>Celements RichText</name>
   <licenses>
     <license>
@@ -64,6 +64,6 @@
     <connection>scm:git:git://github.com/celements/celements-RTE</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-RTE.git</developerConnection>
     <url>https://github.com/celements/celements-RTE/RichText-component</url>
-    <tag>celements-richtext-6.0</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
