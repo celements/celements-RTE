@@ -1,0 +1,28 @@
+//
+// Placeholder
+//
+
+@placeholder-text-color: @text-color-muted;
+
+.mce-content-body[data-mce-placeholder] {
+  position: relative;
+
+  // Don't show the placeholder if visualblocks is enabled
+  &:not(.mce-visualblocks)::before {
+    color: @placeholder-text-color;
+    content: attr(data-mce-placeholder);
+    position: absolute;
+  }
+}
+
+.mce-content-body:not([dir=rtl])[data-mce-placeholder] {
+  &:not(.mce-visualblocks)::before {
+    left: 1px;
+  }
+}
+
+.mce-content-body[dir=rtl][data-mce-placeholder] {
+  &:not(.mce-visualblocks)::before {
+    right: 1px;
+  }
+}

@@ -1,0 +1,61 @@
+//
+// Slider
+//
+
+@slider-handle-background-color: @color-tint;
+@slider-handle-border-radius: @control-border-radius;
+@slider-handle-border: 2px solid darken(@slider-handle-background-color, 10%);
+@slider-handle-box-shadow: none;
+@slider-handle-height: 24px;
+@slider-handle-width: 14px;
+@slider-rail-background-color: transparent;
+@slider-rail-border-radius: @control-border-radius;
+@slider-rail-border: 1px solid @border-color;
+@slider-rail-height: 10px;
+
+.tox {
+  .tox-slider {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    height: @slider-handle-height;
+    justify-content: center;
+    position: relative;
+  }
+
+  .tox-slider__rail {
+    background-color: @slider-rail-background-color;
+    border: @slider-rail-border;
+    border-radius: @slider-rail-border-radius;
+    height: @slider-rail-height;
+    min-width: 120px;
+    width: 100%;
+  }
+
+  .tox-slider__handle {
+    background-color: @slider-handle-background-color;
+    border: @slider-handle-border;
+    border-radius: @slider-handle-border-radius;
+    box-shadow: @slider-handle-box-shadow;
+    height: @slider-handle-height;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: @slider-handle-width;
+  }
+
+  // Spacing between multiple sliders in a stack
+  .tox-form__controls-h-stack > .tox-slider:not(:first-of-type) {
+    margin-inline-start: @pad-sm;
+  }
+
+  // Spacing between form group and slider in a stack
+  .tox-form__controls-h-stack > .tox-form__group + .tox-slider {
+    margin-inline-start: @pad-xl;
+  }
+
+  .tox-form__controls-h-stack > .tox-slider + .tox-form__group {
+    margin-inline-start: @pad-xl;
+  }
+}
