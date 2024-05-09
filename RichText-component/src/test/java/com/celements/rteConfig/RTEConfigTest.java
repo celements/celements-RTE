@@ -43,7 +43,6 @@ import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.LuceneSearchResult;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
-import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
@@ -66,7 +65,7 @@ public class RTEConfigTest extends AbstractComponentTest {
         "TestSpace", "TestDoc")));
     webPrefDoc = new XWikiDocument(config.getWebPrefDoc().get());
     expect(getMock(IPageTypeResolverRole.class).resolvePageTypeRefForCurrentDoc())
-        .andReturn(new PageTypeReference("RichText", "xobject", ImmutableList.of("pagetype")))
+        .andReturn(new PageTypeReference("RichText", "xobject", List.of("pagetype")))
         .anyTimes();
     pageTypeCfgDoc = new XWikiDocument(new DocumentReference(getContext().getDatabase(),
         "PageTypes", "RichText"));
@@ -260,7 +259,7 @@ public class RTEConfigTest extends AbstractComponentTest {
 
   @Test
   public void test_getRTEConfigsList() throws Exception {
-    List<DocumentReference> result = ImmutableList.of(getContext().getDoc().getDocumentReference());
+    List<DocumentReference> result = List.of(getContext().getDoc().getDocumentReference());
     LuceneQuery query = new LuceneQuery();
     expect(getMock(ILuceneSearchService.class).createQuery()).andReturn(query);
     expect(getMock(ILuceneSearchService.class).createObjectRestriction(RTE_CFG_TYPE_PROP_CLASS_REF))

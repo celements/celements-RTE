@@ -27,12 +27,12 @@
   <parent>
     <groupId>com.celements</groupId>
     <artifactId>base-pom</artifactId>
-    <version>5.9</version>
+    <version>6.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tinymce-base-v6</artifactId>
   <packaging>war</packaging>
-  <version>6.8.3-CEL5-SNAPSHOT</version>
+  <version>6.8.3-CEL6-SNAPSHOT</version>
   <name>TinyMCE Base</name>
   <licenses>
     <license>

@@ -38,7 +38,6 @@ import com.celements.rteConfig.RteConfigRole;
 import com.celements.sajson.JsonBuilder;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.web.Utils;
 
@@ -73,7 +72,7 @@ public class TinyMce4ConfigTest extends AbstractComponentTest {
             DocumentReference.class);
     final DocumentReference testRteConfDocRef2 = new RefBuilder().with(testRteConfDocRef1).doc(
         "TestConfig2").build(DocumentReference.class);
-    final List<DocumentReference> expectedConfigDocList = ImmutableList.of(testRteConfDocRef1,
+    final List<DocumentReference> expectedConfigDocList = List.of(testRteConfDocRef1,
         testRteConfDocRef2);
     expect(rteConfigMock.getRTEConfigsList()).andReturn(expectedConfigDocList);
     replayDefault();
