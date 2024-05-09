@@ -73,7 +73,7 @@ class CelRteAdaptor {
     const tinyConfig = await this.#tinyConfigLoadedPromise;
     await Promise.all([
         this.#tinyConfigLoadedPromise,
-        this.#addTinyMceScript(),
+        this.#addTinyMceScript(tinyConfig),
         ...beforeTinyInitPromiseArray
     ]);
     console.debug('getTinyReadyPromise tinymce.init', tinymce, tinyConfig);
@@ -82,10 +82,11 @@ class CelRteAdaptor {
     return tinyConfig;
   }
 
-  #addTinyMceScript() {
+  #addTinyMceScript(tinyConfig) {
     return new Promise((resolve) => {
       const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
-      jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/6.3.0/tinymce.min.js');
+      jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/'
+       + tinyConfig.jsRteUrl + '/tinymce.min.js');
       jsLazyLoadElem.addEventListener('celements:jsFileLoaded', () => {
         resolve();
         console.debug('addTinyMceScript: tinymce loaded');

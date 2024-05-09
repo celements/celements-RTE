@@ -106,5 +106,6 @@ $jsonBuilder.addProperty("wiki_linkpicker_space", "$allLinkPickerSpaces")##
 $jsonBuilder.addProperty("wiki_linkpicker_baseurl", "$doc.getURL('view')")##
 $jsonBuilder.openProperty("style_formats")##
 $jsonBuilder.addValue($services.rteconfig.getRteJsonConfigField("style_formats"))##
+$jsonBuilder.addProperty("jsRteUrl", $services.rteconfig.jsRteUrl())##
 $jsonBuilder.closeDictionary()## tiny6 config dictionary
 $jsonBuilder.getJSON()

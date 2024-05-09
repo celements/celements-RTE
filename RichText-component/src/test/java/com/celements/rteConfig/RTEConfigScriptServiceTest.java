@@ -16,7 +16,6 @@ import com.celements.common.test.AbstractComponentTest;
 import com.celements.emptycheck.internal.IDefaultEmptyDocStrategyRole;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.reference.RefBuilder;
-import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.web.Utils;
 
 public class RTEConfigScriptServiceTest extends AbstractComponentTest {
@@ -100,7 +99,7 @@ public class RTEConfigScriptServiceTest extends AbstractComponentTest {
             DocumentReference.class);
     final DocumentReference testRteConfDocRef2 = new RefBuilder().with(testRteConfDocRef1).doc(
         "TestConfig2").build(DocumentReference.class);
-    final List<DocumentReference> expectedResult = ImmutableList.of(testRteConfDocRef1,
+    final List<DocumentReference> expectedResult = List.of(testRteConfDocRef1,
         testRteConfDocRef2);
     expect(rteConfigSrvMock.getRTEConfigsList()).andReturn(expectedResult);
     replayDefault();

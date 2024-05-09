@@ -24,7 +24,6 @@ import java.util.List;
 import org.xwiki.component.annotation.Component;
 
 import com.celements.rte.RteImplementation;
-import com.google.common.collect.ImmutableList;
 
 @Component(RteTinyMce6.NAME)
 public class RteTinyMce6 implements RteImplementation {
@@ -38,7 +37,7 @@ public class RteTinyMce6 implements RteImplementation {
 
   @Override
   public List<String> getJavaScriptFiles() {
-    return ImmutableList.of(":celRteJS/tinyMCE6/loadTinyMCE-async.mjs");
+    return List.of(":celRteJS/tinyMCE6/loadTinyMCE-async.mjs");
   }
 
 }

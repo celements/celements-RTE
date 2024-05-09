@@ -22,35 +22,46 @@ package com.celements.tinymce6;
 import java.util.List;
 import java.util.Map;
 
-import org.xwiki.component.annotation.Component;
+import javax.inject.Inject;
+import javax.validation.constraints.NotEmpty;
 
+import org.springframework.stereotype.Component;
+import org.xwiki.configuration.ConfigurationSource;
+
+import com.celements.rteConfig.RteConfigRole;
 import com.celements.tinymce4.TinyMce4Config;
-import com.google.common.collect.ImmutableList;
+import com.celements.web.service.IWebUtilsService;
 import com.google.common.collect.ImmutableMap;
 
 @Component(TinyMce6Config.HINT)
 public class TinyMce6Config extends TinyMce4Config {
+
+  @Inject
+  public TinyMce6Config(RteConfigRole rteConfig, IWebUtilsService webUtilsService,
+      ConfigurationSource cfgSrc) {
+    super(rteConfig, webUtilsService, cfgSrc);
+  }
 
   /**
    * CAUTION: do not change the HINT it will be used from the vm-scripts
    */
   public static final String HINT = "tinymce6";
 
-  private static final ImmutableList<String> CELIMAGE_TINY6 = ImmutableList.of("image");
-  private static final ImmutableList<String> CELLINK_TINY6 = ImmutableList.of("link");
+  private static final List<String> CELIMAGE_TINY6 = List.of("image");
+  private static final List<String> CELLINK_TINY6 = List.of("link");
   private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP_TINY6 = ImmutableMap
       .<String, List<String>>builder()
       .put("celimage", CELIMAGE_TINY6)
       .put("advimage", CELIMAGE_TINY6)
-      .put("separator", ImmutableList.of(SEPARATOR))
+      .put("separator", List.of(SEPARATOR))
       .put("advlink", CELLINK_TINY6)
       .put("cellink", CELLINK_TINY6)
       .put("tablecontrols", TABLE_CONTROLS)
-      .put("justifyleft", ImmutableList.of("alignleft"))
-      .put("justifycenter", ImmutableList.of("aligncenter"))
-      .put("justifyright", ImmutableList.of("alignright"))
-      .put("justifyfull", ImmutableList.of("alignjustify"))
-      .put("pasteword", ImmutableList.of("paste"))
+      .put("justifyleft", List.of("alignleft"))
+      .put("justifycenter", List.of("aligncenter"))
+      .put("justifyright", List.of("alignright"))
+      .put("justifyfull", List.of("alignjustify"))
+      .put("pasteword", List.of("paste"))
       .build();
 
   @Override
@@ -58,4 +69,8 @@ public class TinyMce6Config extends TinyMce4Config {
     return BUTTONS_CONVERSIONMAP_TINY6;
   }
 
+  @Override
+  public @NotEmpty String jsRteUrl() {
+    return generateURL("6.3.0");
+  }
 }
