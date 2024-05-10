@@ -1,6 +1,5 @@
 package com.celements.tinymce6;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -9,6 +8,7 @@ import org.junit.Test;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.common.test.TestMessageTool;
+import com.celements.rteConfig.RTEConfig;
 import com.celements.rteConfig.RteConfigRole;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWiki;
@@ -23,15 +23,17 @@ public class TinyMce6ConfigTest extends AbstractComponentTest {
 
   @Before
   public void setUp_TinyMce6ConfigTest() throws Exception {
-    wiki = getWikiMock();
+    wiki = getMock(XWiki.class);
     wUServiceMock = registerComponentMock(IWebUtilsService.class);
-    rteConfigMock = registerComponentMock(RteConfigRole.class);
-    expect(wiki.getDefaultLanguage(same(getContext()))).andReturn("de").anyTimes();
-    expect(wiki.getXWikiPreference(eq("documentBundles"), same(getContext()))).andReturn("")
+    rteConfigMock = createDefaultMock(RTEConfig.class);
+    getBeanFactory().registerSingleton(RTEConfig.class.getName(), rteConfigMock);
+    expect(wiki.getDefaultLanguage(same(getXContext()))).andReturn("de").anyTimes();
+    expect(wiki.getXWikiPreference(eq("documentBundles"), same(getXContext()))).andReturn("")
         .anyTimes();
     expect(wiki.Param(eq("xwiki.documentBundles"))).andReturn("").anyTimes();
-    expect(wUServiceMock.getAdminMessageTool()).andReturn(getContext().getMessageTool()).anyTimes();
-    ((TestMessageTool) getContext().getMessageTool()).injectMessage("test1key",
+    expect(wUServiceMock.getAdminMessageTool()).andReturn(getXContext().getMessageTool())
+        .anyTimes();
+    ((TestMessageTool) getXContext().getMessageTool()).injectMessage("test1key",
         "Test 1 Style");
     tinyMce6Config = (TinyMce6Config) Utils.getComponent(RteConfigRole.class, TinyMce6Config.HINT);
   }

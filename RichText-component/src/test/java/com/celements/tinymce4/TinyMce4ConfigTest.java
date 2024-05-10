@@ -19,7 +19,6 @@
  */
 package com.celements.tinymce4;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -34,6 +33,7 @@ import org.xwiki.model.reference.DocumentReference;
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.common.test.TestMessageTool;
 import com.celements.model.reference.RefBuilder;
+import com.celements.rteConfig.RTEConfig;
 import com.celements.rteConfig.RteConfigRole;
 import com.celements.sajson.JsonBuilder;
 import com.celements.web.service.IWebUtilsService;
@@ -50,23 +50,25 @@ public class TinyMce4ConfigTest extends AbstractComponentTest {
 
   @Before
   public void setUp_TinyMce4ConfigTest() throws Exception {
-    wiki = getWikiMock();
+    wiki = getMock(XWiki.class);
     wUServiceMock = registerComponentMock(IWebUtilsService.class);
-    rteConfigMock = registerComponentMock(RteConfigRole.class);
-    expect(wiki.getDefaultLanguage(same(getContext()))).andReturn("de").anyTimes();
-    expect(wiki.getXWikiPreference(eq("documentBundles"), same(getContext()))).andReturn("")
+    rteConfigMock = createDefaultMock(RTEConfig.class);
+    getBeanFactory().registerSingleton(RTEConfig.class.getName(), rteConfigMock);
+    expect(wiki.getDefaultLanguage(same(getXContext()))).andReturn("de").anyTimes();
+    expect(wiki.getXWikiPreference(eq("documentBundles"), same(getXContext()))).andReturn("")
         .anyTimes();
     expect(wiki.Param(eq("xwiki.documentBundles"))).andReturn("").anyTimes();
     tinyMce4Config = (TinyMce4Config) Utils.getComponent(RteConfigRole.class, TinyMce4Config.HINT);
-    expect(wUServiceMock.getAdminMessageTool()).andReturn(getContext().getMessageTool()).anyTimes();
-    ((TestMessageTool) getContext().getMessageTool()).injectMessage("test1key",
+    expect(wUServiceMock.getAdminMessageTool()).andReturn(getXContext().getMessageTool())
+        .anyTimes();
+    ((TestMessageTool) getXContext().getMessageTool()).injectMessage("test1key",
         "Test 1 Style");
   }
 
   @Test
   public void test_getRTEConfigsList() {
     final DocumentReference testRteConfDocRef1 = new RefBuilder().wiki(
-        getContext().getDatabase()).space("RteConfigs").doc("TestConfig1").build(
+        getXContext().getDatabase()).space("RteConfigs").doc("TestConfig1").build(
             DocumentReference.class);
     final DocumentReference testRteConfDocRef2 = new RefBuilder().with(testRteConfDocRef1).doc(
         "TestConfig2").build(DocumentReference.class);
