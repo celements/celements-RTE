@@ -37,8 +37,14 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<<<<<<< HEAD
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
+=======
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+>>>>>>> c7d0d26 (add primary annotation)
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
@@ -65,6 +71,7 @@ import com.google.common.collect.ImmutableMap;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
+@Primary
 public class RTEConfig implements RteConfigRole {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RTEConfig.class);
