@@ -236,8 +236,9 @@ public class TinyMce4Config implements RteConfigRole {
         + cfgSrc.getProperty("celements.rteconfig.Tiny" + defaultVers.charAt(0) + "Version",
             defaultVers)
         + "/tinymce.min.js";
-    return new AttachmentURLCommand().getAttachmentURL(
-        rteUrlLink, null, (String) null)
-        .map(UriComponents::toUriString).orElse(rteUrlLink);
+    return new AttachmentURLCommand()
+        .getAttachmentURL(rteUrlLink, null, (String) null)
+        .map(UriComponents::toUriString)
+        .orElse(rteUrlLink);
   }
 }
