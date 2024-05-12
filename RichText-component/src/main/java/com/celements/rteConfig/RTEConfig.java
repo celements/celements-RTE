@@ -223,9 +223,10 @@ public class RTEConfig implements RteConfigRole {
   }
 
   private String generateURL(String rteUrlLink) {
-    return new AttachmentURLCommand().getAttachmentURL(
-        rteUrlLink, null, (String) null)
-        .map(UriComponents::toUriString).orElse(rteUrlLink);
+    return new AttachmentURLCommand()
+        .getAttachmentURL(rteUrlLink, null, (String) null)
+        .map(UriComponents::toUriString)
+        .orElse(rteUrlLink);
   }
 
 }
