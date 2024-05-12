@@ -44,19 +44,19 @@
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-model</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-core</artifactId>
-      <version>6.0</version>
+      <version>6.6</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-search</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

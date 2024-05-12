@@ -27,11 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.annotation.Component;
+import org.springframework.stereotype.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
@@ -60,6 +61,9 @@ public class RTEConfigScriptService implements ScriptService {
 
   @Requirement
   private IDefaultEmptyDocStrategyRole defaultEmptyDocStrategyRole;
+
+  @Inject
+  private RteConfigRole defaultRteConfig;
 
   @Requirement
   private Map<String, RteConfigRole> rteConfigMap;
@@ -132,7 +136,7 @@ public class RTEConfigScriptService implements ScriptService {
 
   @NotNull
   RteConfigRole getActiveRteConfig() {
-    return firstNonNull(rteConfigMap.get(getRteConfigHint()), rteConfigMap.get("default"));
+    return firstNonNull(rteConfigMap.get(getRteConfigHint()), defaultRteConfig);
   }
 
   public RteImplementation getRteImplementation() {

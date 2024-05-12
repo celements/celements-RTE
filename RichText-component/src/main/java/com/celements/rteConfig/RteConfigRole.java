@@ -24,12 +24,10 @@ import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.sajson.JsonBuilder;
 
-@ComponentRole
 public interface RteConfigRole {
 
   @NotNull
@@ -40,5 +38,8 @@ public interface RteConfigRole {
 
   @NotNull
   JsonBuilder getRteJsonConfigField(@NotEmpty String name);
+
+  @NotEmpty
+  String jsRteUrl();
 
 }

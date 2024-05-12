@@ -25,20 +25,23 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.rteConfig.RteConfigRole;
 import com.celements.sajson.JsonBuilder;
+import com.celements.web.plugin.cmd.AttachmentURLCommand;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 @Component(TinyMce4Config.HINT)
@@ -51,11 +54,18 @@ public class TinyMce4Config implements RteConfigRole {
    */
   public static final String HINT = "tinymce4";
 
-  @Requirement
-  private RteConfigRole rteConfig;
+  private final RteConfigRole rteConfig;
+  private final IWebUtilsService webUtilsService;
+  private final ConfigurationSource cfgSrc;
 
-  @Requirement
-  private IWebUtilsService webUtilsService;
+  @Inject
+  public TinyMce4Config(RteConfigRole rteConfig,
+      IWebUtilsService webUtilsService,
+      ConfigurationSource cfgSrc) {
+    this.rteConfig = rteConfig;
+    this.webUtilsService = webUtilsService;
+    this.cfgSrc = cfgSrc;
+  }
 
   private static final String INVALID_ELEMENTS_NAME = "invalid_elements";
   static final String INVALID_ELEMENTS_DEF = "blockquote,body,button,center,cite,code,col,colgroup,"
@@ -80,27 +90,27 @@ public class TinyMce4Config implements RteConfigRole {
       + "-tr[align<center?char?justify?left?right|bgcolor|class|style|rowspan|valign<baseline"
       + "?bottom?middle?top|id],-ol[class|type|compact],-ul[class|type|compact],#li[class]";
   protected static final String SEPARATOR = "|";
-  protected static final List<String> ALL_SEPARATOR_LIST = ImmutableList.of(SEPARATOR, "separator");
-  protected static final ImmutableList<String> TABLE_CONTROLS = ImmutableList.of("table", SEPARATOR,
+  protected static final List<String> ALL_SEPARATOR_LIST = List.of(SEPARATOR, "separator");
+  protected static final List<String> TABLE_CONTROLS = List.of("table", SEPARATOR,
       "tablerowprops", "tablecellprops", SEPARATOR, "tableinsertrowbefore", "tableinsertrowafter",
       "tabledeleterow", SEPARATOR, "tableinsertcolbefore", "tableinsertcolafter", "tabledeletecol",
       SEPARATOR, "tablesplitcells", "tablemergecells");
-  protected static final ImmutableList<String> CELIMAGE = ImmutableList.of("celimage");
-  protected static final ImmutableList<String> CELLINK = ImmutableList.of("cellink");
-  private static final List<String> BUTTONS_BLACKLIST = ImmutableList.of("save", "cancel", "",
+  protected static final List<String> CELIMAGE = List.of("celimage");
+  protected static final List<String> CELLINK = List.of("cellink");
+  private static final List<String> BUTTONS_BLACKLIST = List.of("save", "cancel", "",
       "none");
   private static final Map<String, List<String>> BUTTONS_CONVERSIONMAP = ImmutableMap
       .<String, List<String>>builder()
       .put("image", CELIMAGE)
       .put("advimage", CELIMAGE)
-      .put("separator", ImmutableList.of(SEPARATOR))
+      .put("separator", List.of(SEPARATOR))
       .put("advlink", CELLINK).put("link", CELLINK)
       .put("tablecontrols", TABLE_CONTROLS)
-      .put("justifyleft", ImmutableList.of("alignleft"))
-      .put("justifycenter", ImmutableList.of("aligncenter"))
-      .put("justifyright", ImmutableList.of("alignright"))
-      .put("justifyfull", ImmutableList.of("alignjustify"))
-      .put("pasteword", ImmutableList.of("paste"))
+      .put("justifyleft", List.of("alignleft"))
+      .put("justifycenter", List.of("aligncenter"))
+      .put("justifyright", List.of("alignright"))
+      .put("justifyfull", List.of("alignjustify"))
+      .put("pasteword", List.of("paste"))
       .build();
 
   protected static final Pattern ROW_LAYOUT_REGEX = Pattern.compile("row_\\d+");
@@ -157,7 +167,7 @@ public class TinyMce4Config implements RteConfigRole {
     for (String element : rteRowArray) {
       final String buttonName = element.trim();
       if (!BUTTONS_BLACKLIST.contains(buttonName)) {
-        List<String> newButtonNameList = ImmutableList.of(buttonName);
+        List<String> newButtonNameList = List.of(buttonName);
         if (getButtonsConversionMap().containsKey(buttonName)) {
           newButtonNameList = getButtonsConversionMap().get(buttonName);
         }
@@ -216,4 +226,19 @@ public class TinyMce4Config implements RteConfigRole {
     return Stream.empty();
   }
 
+  @Override
+  public @NotEmpty String jsRteUrl() {
+    return generateURL("4.9.11");
+  }
+
+  protected String generateURL(String defaultVers) {
+    String rteUrlLink = ":celRTE/"
+        + cfgSrc.getProperty("celements.rteconfig.Tiny" + defaultVers.charAt(0) + "Version",
+            defaultVers)
+        + "/tinymce.min.js";
+    return new AttachmentURLCommand()
+        .getAttachmentURL(rteUrlLink, null, (String) null)
+        .map(UriComponents::toUriString)
+        .orElse(rteUrlLink);
+  }
 }

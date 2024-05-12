@@ -31,14 +31,17 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
@@ -60,11 +63,13 @@ import com.celements.search.lucene.LuceneSearchException;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.web.CelConstant;
 import com.celements.web.classcollections.IOldCoreClassConfig;
+import com.celements.web.plugin.cmd.AttachmentURLCommand;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
+@Primary
 public class RTEConfig implements RteConfigRole {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RTEConfig.class);
@@ -79,26 +84,31 @@ public class RTEConfig implements RteConfigRole {
       IOldCoreClassConfig.XWIKI_PREFERENCES_CLASS_SPACE,
       IOldCoreClassConfig.XWIKI_PREFERENCES_CLASS_DOC);
 
-  @Requirement
-  private IPageTypeResolverRole pageTypeResolver;
+  private final IPageTypeResolverRole pageTypeResolver;
+  private final XObjectPageTypeUtilsRole xobjectPageTypeUtils;
+  private final ILuceneSearchService searchService;
+  private final ConfigurationSource propCfgSrc;
+  private final ModelUtils modelUtils;
+  private final IModelAccessFacade modelAccess;
+  private final ModelContext context;
 
-  @Requirement
-  private XObjectPageTypeUtilsRole xobjectPageTypeUtils;
-
-  @Requirement
-  private ILuceneSearchService searchService;
-
-  @Requirement(CelementsAllPropertiesConfigurationSource.NAME)
-  private ConfigurationSource propCfgSrc;
-
-  @Requirement
-  private ModelUtils modelUtils;
-
-  @Requirement
-  private IModelAccessFacade modelAccess;
-
-  @Requirement
-  private ModelContext context;
+  @Inject
+  public RTEConfig(
+      IPageTypeResolverRole pageTypeResolver,
+      XObjectPageTypeUtilsRole xobjectPageTypeUtils,
+      ILuceneSearchService searchService,
+      @Named(CelementsAllPropertiesConfigurationSource.NAME) ConfigurationSource propCfgSrc,
+      ModelUtils modelUtils,
+      IModelAccessFacade modelAccess,
+      ModelContext context) {
+    this.pageTypeResolver = pageTypeResolver;
+    this.xobjectPageTypeUtils = xobjectPageTypeUtils;
+    this.searchService = searchService;
+    this.propCfgSrc = propCfgSrc;
+    this.modelUtils = modelUtils;
+    this.modelAccess = modelAccess;
+    this.context = context;
+  }
 
   @Override
   public String getRTEConfigField(@NotEmpty String name) {
@@ -205,6 +215,18 @@ public class RTEConfig implements RteConfigRole {
         .map(s -> Strings.nullToEmpty(s).trim())
         .filter(not(String::isEmpty))
         .findFirst();
+  }
+
+  @Override
+  public @NotEmpty String jsRteUrl() {
+    return generateURL(":celRTE/tiny_mce_src.js");
+  }
+
+  private String generateURL(String rteUrlLink) {
+    return new AttachmentURLCommand()
+        .getAttachmentURL(rteUrlLink, null, (String) null)
+        .map(UriComponents::toUriString)
+        .orElse(rteUrlLink);
   }
 
 }
