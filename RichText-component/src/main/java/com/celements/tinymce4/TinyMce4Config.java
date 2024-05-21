@@ -232,10 +232,11 @@ public class TinyMce4Config implements RteConfigRole {
   }
 
   protected String generateURL(String defaultVers) {
-    String rteUrlLink = ":celRTE/"
-        + cfgSrc.getProperty("celements.rteconfig.Tiny" + defaultVers.charAt(0) + "Version",
-            defaultVers)
-        + "/tinymce.min.js";
+    String cfgValue = cfgSrc.getProperty(
+        "celements.rteconfig.Tiny" + defaultVers.charAt(0) + "Version",
+        defaultVers);
+    LOGGER.info("generateURL with default {}. Result {}", defaultVers, cfgValue);
+    String rteUrlLink = ":celRTE/" + cfgValue + "/tinymce.min.js";
     return new AttachmentURLCommand()
         .getAttachmentURL(rteUrlLink, null, (String) null)
         .map(UriComponents::toUriString)

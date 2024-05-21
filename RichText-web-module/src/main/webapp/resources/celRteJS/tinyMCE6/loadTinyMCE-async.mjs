@@ -85,8 +85,7 @@ class CelRteAdaptor {
   #addTinyMceScript(tinyConfig) {
     return new Promise((resolve) => {
       const jsLazyLoadElem = document.createElement('cel-lazy-load-js');
-      jsLazyLoadElem.setAttribute('src', '/file/resources/celRTE/'
-       + tinyConfig.jsRteUrl + '/tinymce.min.js');
+      jsLazyLoadElem.setAttribute('src', tinyConfig.jsRteUrl);
       jsLazyLoadElem.addEventListener('celements:jsFileLoaded', () => {
         resolve();
         console.debug('addTinyMceScript: tinymce loaded');

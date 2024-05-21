@@ -1,6 +1,5 @@
 package com.celements.rteConfig;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -9,6 +8,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.python.google.common.base.Strings;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
@@ -95,7 +95,7 @@ public class RTEConfigScriptServiceTest extends AbstractComponentTest {
   public void test_getRTEConfigsList() {
     rteConfigScriptSrv.setRteConfigHint("rteConfigMock");
     final DocumentReference testRteConfDocRef1 = new RefBuilder().wiki(
-        getContext().getDatabase()).space("RteConfigs").doc("TestConfig1").build(
+        getXContext().getDatabase()).space("RteConfigs").doc("TestConfig1").build(
             DocumentReference.class);
     final DocumentReference testRteConfDocRef2 = new RefBuilder().with(testRteConfDocRef1).doc(
         "TestConfig2").build(DocumentReference.class);
@@ -133,6 +133,26 @@ public class RTEConfigScriptServiceTest extends AbstractComponentTest {
     } catch (Exception exp) {
       fail(exp.getMessage());
     }
+    verifyDefault();
+  }
+
+  @Test
+  public void test_jsRteUrl_Exception() {
+    rteConfigScriptSrv.setRteConfigHint("rteConfigMock");
+    expect(rteConfigSrvMock.jsRteUrl()).andThrow(new NullPointerException(
+        "Unable to read config"));
+    replayDefault();
+    assertFalse("not null or empty", Strings.isNullOrEmpty(rteConfigScriptSrv.jsRteUrl()));
+    verifyDefault();
+  }
+
+  @Test
+  public void test_jsRteUrl() {
+    rteConfigScriptSrv.setRteConfigHint("rteConfigMock");
+    String expectedUrl = "/file/resources/celRTE/6.8.3/tinymce.min.js";
+    expect(rteConfigSrvMock.jsRteUrl()).andReturn(expectedUrl);
+    replayDefault();
+    assertEquals("must be expected url", expectedUrl, rteConfigScriptSrv.jsRteUrl());
     verifyDefault();
   }
 

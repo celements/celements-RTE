@@ -89,7 +89,7 @@ public class RTEConfigScriptService implements ScriptService {
       try {
         return getActiveRteConfig().getRTEConfigField(name);
       } catch (Exception exp) {
-        LOGGER.error("getRTEConfigField for name [" + name + "] failed.", exp);
+        LOGGER.error("getRTEConfigField for name [{}] failed.", name, exp);
       }
     }
     return "";
@@ -101,7 +101,7 @@ public class RTEConfigScriptService implements ScriptService {
       try {
         return getActiveRteConfig().getRteJsonConfigField(name);
       } catch (Exception exp) {
-        LOGGER.error("getRteJsonConfigField for name [" + name + "] failed.", exp);
+        LOGGER.error("getRteJsonConfigField for name [{}] failed.", name, exp);
       }
     }
     return new JsonBuilder();
@@ -122,6 +122,16 @@ public class RTEConfigScriptService implements ScriptService {
       LOGGER.error("getRTEConfigsList failed.", exp);
     }
     return Collections.emptyList();
+  }
+
+  @NotNull
+  public String jsRteUrl() {
+    try {
+      return getActiveRteConfig().jsRteUrl();
+    } catch (Exception exp) {
+      LOGGER.error("jsRteUrl for confighint [{}] failed.", getRteConfigHint(), exp);
+    }
+    return "errorConfig" + getRteConfigHint();
   }
 
   public void setRteConfigHint(@Nullable String rteConfigHint) {
