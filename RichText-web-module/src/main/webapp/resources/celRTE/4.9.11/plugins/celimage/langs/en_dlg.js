@@ -78,5 +78,6 @@ effects : "effect",
   "asp_ratio_ratio" : "aspect ratio",
   "release" : "release",
   "exec" : "apply",
-  "resetMax" : "reset to max"
+  "resetMax" : "reset to max",
+  "raw_flag" : "force original"
 });

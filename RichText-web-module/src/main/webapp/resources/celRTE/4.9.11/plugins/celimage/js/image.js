@@ -39,6 +39,7 @@ var CelImageDialog = {
           && (nl.cropHeight.value != '')) {
         nl.isCropped.value = '1';
       }
+      nl.raw.checked = _me.getAttrib(n, 'raw') === '1';
       nl.alt.value = dom.getAttrib(n, 'alt');
       nl.title.value = dom.getAttrib(n, 'title');
       nl.marginTop.value = _me.getAttrib(n, 'marginTop');
@@ -300,7 +301,24 @@ var CelImageDialog = {
     }
     return '';
   },
-  
+
+  addRawFlagToURL : function(src) {
+    const f = document.forms[0];
+    if (src && (src != '')) {
+      let newSrc = src.replace(/(.*\?)(.*&(?:amp;)?raw=\d*|raw=\d*)(\D?.*)/g, '$1$3');
+      if(newSrc.indexOf('?') < 0) {
+        newSrc += '?';
+      } else if(!newSrc.endsWith('&') && !newSrc.endsWith('&amp;')) {
+        newSrc += '&';
+      }
+      if (f.raw.checked) {
+        newSrc += 'raw=1';
+      }
+      return newSrc;
+    }
+    return '';
+  },
+
   addFixAnimSizeToURL : function(src) {
     var f = document.forms[0];
     var nl = f.elements;
@@ -430,6 +448,8 @@ var CelImageDialog = {
     nl.src.value = _me.replaceCropInURL(nl.src.value);
 
     nl.src.value = _me.addFixAnimSizeToURL(nl.src.value);
+
+    nl.src.value = _me.addRawFlagToURL(nl.src.value);
 
     tinymce.extend(args, {
       src : nl.src.value,
@@ -700,6 +720,9 @@ var CelImageDialog = {
     if(at == 'cropHeight') {
       return e.src.replace(/((^|(.*(?:[\?&]|&amp;)))cropH=(\d*)\D?.*)|.*/g, '$4');
     }
+    if(at == 'raw') {
+      return e.src.replace(/((^|(.*(?:[\?&]|&amp;)))raw=(\d*)\D?.*)|.*/g, '$4');
+    }
     
     if (at == 'gallery') {
       v = '';
@@ -936,6 +959,12 @@ var CelImageDialog = {
     }
   },
 
+  toggleRaw : function() {
+    const f = document.forms[0];
+    const t = this;
+    t.showPreviewImage(f.src.value, 1);
+  },
+
   changeHeight : function() {
     var f = document.forms[0], tp, t = this;
 
@@ -1064,8 +1093,8 @@ var CelImageDialog = {
           'celimage_dlg.select_image_first') +'</p>');
       return;
     }
-    u = _me.replaceCropInURL(_me.addAutoResizeToURL(u, nl.celwidth.value,
-        nl.celheight.value));
+    u = _me.addRawFlagToURL(_me.replaceCropInURL(_me.addAutoResizeToURL(u, nl.celwidth.value,
+        nl.celheight.value)));
         
     if (!st && tinyMCEPopup.getParam("advimage_update_dimensions_onchange", true)) {
       this.resetImageData();
@@ -1081,6 +1110,7 @@ var CelImageDialog = {
       $('cropY').value = '';
       $('cropWidth').value = '';
       $('cropHeight').value = '';
+      $('raw').checked = false;
 //      console.log('showPreviewImage: image changed');
     } else {
 //      console.log('showPreviewImage: image NOT changed');

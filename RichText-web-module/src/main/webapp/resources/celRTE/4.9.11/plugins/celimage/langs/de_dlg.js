@@ -78,5 +78,6 @@ tinyMCE.addI18n('de.celimage_dlg', {
   "asp_ratio_ratio" : "Seitenverhältnis",
   "release" : "Ganzes Bild",
   "exec" : "Anwenden",
-  "resetMax" : "Zurücksetzen"
+  "resetMax" : "Zurücksetzen",
+  "raw_flag" : "Original erzwingen"
 });
