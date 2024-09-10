@@ -79,5 +79,5 @@ effects : "effect",
   "release" : "release",
   "exec" : "apply",
   "resetMax" : "reset to max",
-  "raw_flag" : "force original"
+  "raw_flag" : "force raw"
 });
