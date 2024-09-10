@@ -20,9 +20,6 @@
 #marginTop, #marginBottom, #marginRight, #marginLeft {
   vertical-align:middle; width:50px; text-align:center;
 }
-#celwidth[disabled], #celheight[disabled], #resetMax[disabled] {
-  background-color: lightgray;
-}
 #raw {
   width: 15px;
   margin-left: 0;
