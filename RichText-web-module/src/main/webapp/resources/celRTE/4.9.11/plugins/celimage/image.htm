@@ -98,6 +98,12 @@
                     </td>
               </tr>
             <tr>
+              <td class="column1"><label id="rawlabel" for="raw">{#celimage_dlg.raw_flag}</label></td>
+              <td class="nowrap">
+                <input name="raw" type="checkbox" id="raw" value="1" onchange="CelImageDialog.toggleRaw();"/> 
+              </td>
+            </tr>
+            <tr>
               <td class="column1"><label id="widthlabel" for="celwidth">{#celimage_dlg.dimensions}</label></td>
               <td class="nowrap">
                 <input name="celwidth" type="text" id="celwidth" value="" size="5" maxlength="5" class="size" onchange="CelImageDialog.changeHeight();"/> px x 
