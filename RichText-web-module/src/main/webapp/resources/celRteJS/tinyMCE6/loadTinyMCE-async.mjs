@@ -122,7 +122,7 @@ class CelRteAdaptor {
         [...ed.getElement().classList]
           .filter(cssClass => cssClass.startsWith('celEditorBody_'))
           .forEach(cssClass => editor.getBody().classList.add(cssClass));
-        console.debug('TODO add all JS files in content_js array', ed.DOM.ScriptLoader,
+        console.debug('TODO add all JS files in content_js array', ed.dom.ScriptLoader,
           ed.settings.content_js);
         //TODO add all JS files in content_js array
         document.getElementById(ed.id).setAttribute('cel-rte-state', 'initialized');
