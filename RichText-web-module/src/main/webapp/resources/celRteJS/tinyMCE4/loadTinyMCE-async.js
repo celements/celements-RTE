@@ -108,7 +108,7 @@
     const iframeDoc = ed.getDoc();
     const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
     console.debug('celLoadScriptToIFrame add all JS files in content_js array',
-      head, editor.settings.content_js);
+      head, ed.settings.content_js);
   
     (ed.settings.content_js || []).forEach(src => {
       const script = iframeDoc.createElement('script');
