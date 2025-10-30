@@ -21,7 +21,8 @@
 (function(window, undefined) {
   "use strict";
   
-  var tinyConfigLoaded = false;
+  let tinyConfigLoaded = false;
+  let tinyConfigObj = {};
   var editorCounter = 0;
 
   var initCelRTE4 = function() {
@@ -40,10 +41,10 @@
       method: 'post',
       parameters: params,
       onSuccess: function(transport) {
-        var tinyConfigJSON = transport.responseText;
+        const tinyConfigJSON = transport.responseText;
         console.log('tinymce4 config loaded: starting tiny');
         if (tinyConfigJSON.isJSON()) {
-          var tinyConfigObj = tinyConfigJSON.evalJSON();
+          tinyConfigObj = tinyConfigJSON.evalJSON();
           tinyConfigObj["setup"] = celSetupTinyMCE;
           console.debug('initCelRTE4: tinymce.init');
           tinymce.init(tinyConfigObj);
@@ -93,6 +94,9 @@
       [...editor.getElement().classList]
         .filter(cssClass => cssClass.startsWith('celEditorBody_'))
         .forEach(cssClass => editor.getBody().classList.add(cssClass));
+      //TODO add all JS files in content_js array
+      console.debug('TODO add all JS files in content_js array', editor.DOM.ScriptLoader,
+        editor.settings.content_js);
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });

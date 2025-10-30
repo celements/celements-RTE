@@ -117,12 +117,16 @@ class CelRteAdaptor {
     this.#editorInitPromises.push(new Promise((resolve) => {
       console.debug("tinyMceSetupDoneHandler: register 'init' listener for editor", editor.id);
       editor.on('init', (ev) => {
-        console.debug("tinyMceSetupDoneHandler: on 'init' for editor done.", editor.id);
-      [...editor.getElement().classList]
-        .filter(cssClass => cssClass.startsWith('celEditorBody_'))
-        .forEach(cssClass => editor.getBody().classList.add(cssClass));
-        document.getElementById(editor.id).setAttribute('cel-rte-state', 'initialized');
-        resolve(ev.target);
+        const ed = ev.target;
+        console.debug("tinyMceSetupDoneHandler: on 'init' for editor done.", ed.id);
+        [...ed.getElement().classList]
+          .filter(cssClass => cssClass.startsWith('celEditorBody_'))
+          .forEach(cssClass => editor.getBody().classList.add(cssClass));
+        console.debug('TODO add all JS files in content_js array', ed.DOM.ScriptLoader,
+          ed.settings.content_js);
+        //TODO add all JS files in content_js array
+        document.getElementById(ed.id).setAttribute('cel-rte-state', 'initialized');
+        resolve(ed);
       });
     }));
     console.trace('tinyMceSetupDoneHandler finish');
