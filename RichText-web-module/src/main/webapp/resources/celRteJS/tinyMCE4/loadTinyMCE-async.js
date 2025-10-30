@@ -94,9 +94,7 @@
       [...editor.getElement().classList]
         .filter(cssClass => cssClass.startsWith('celEditorBody_'))
         .forEach(cssClass => editor.getBody().classList.add(cssClass));
-      //TODO add all JS files in content_js array
-      console.debug('TODO add all JS files in content_js array', editor.DOM.ScriptLoader,
-        editor.settings.content_js);
+      celLoadScriptToIFrame(editor);
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });
@@ -104,6 +102,22 @@
     } catch (exp) {
       console.error('celFinishTinyMCEStart failed', event, exp);
     }
+  };
+
+  const celLoadScriptToIFrame = (ed) => {
+    const iframeDoc = ed.getDoc();
+    const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+    console.debug('celLoadScriptToIFrame add all JS files in content_js array',
+      head, editor.settings.content_js);
+  
+    (ed.settings.content_js || []).forEach(src => {
+      const script = iframeDoc.createElement('script');
+      script.src = src;
+      script.type = 'text/javascript';
+      head.appendChild(script);
+    });
+  
+    console.debug("Injected content_js scripts into TinyMCE iframe:", ed.settings.content_js);
   };
 
   const lazyLoadTinyMCE = function(mceParentElem) {

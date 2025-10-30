@@ -122,14 +122,28 @@ class CelRteAdaptor {
         [...ed.getElement().classList]
           .filter(cssClass => cssClass.startsWith('celEditorBody_'))
           .forEach(cssClass => editor.getBody().classList.add(cssClass));
-        console.debug('TODO add all JS files in content_js array', ed.dom.ScriptLoader,
-          ed.settings.content_js);
-        //TODO add all JS files in content_js array
+        this.#loadScriptToIFrame(ed);
         document.getElementById(ed.id).setAttribute('cel-rte-state', 'initialized');
         resolve(ed);
       });
     }));
     console.trace('tinyMceSetupDoneHandler finish');
+  }
+
+  #loadScriptToIFrame(ed) {
+    const iframeDoc = ed.getDoc();
+    const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+    console.debug('celLoadScriptToIFrame add all JS files in content_js array',
+      head, editor.settings.content_js);
+  
+    (ed.settings.content_js || []).forEach(src => {
+      const script = iframeDoc.createElement('script');
+      script.src = src;
+      script.type = 'text/javascript';
+      head.appendChild(script);
+    });
+  
+    console.debug("Injected content_js scripts into TinyMCE iframe:", ed.settings.content_js);
   }
 
   #getUninitializedMceEditors(mceParentElem) {
