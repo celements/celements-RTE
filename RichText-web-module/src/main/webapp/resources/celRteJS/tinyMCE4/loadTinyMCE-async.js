@@ -106,10 +106,10 @@
 
   const celAddScriptTag = (iframeDoc, head, tagname, src, scriptType = 'text/javascript') => {
     const script = iframeDoc.createElement(tagname);
-    script.src = src;
-    script.type = scriptType;
+    script.setAttribute('src', src);
+    script.setAttribute('type', scriptType);
     head.appendChild(script);
-    console.log('celAddScriptTag: added ', JSON.stringify(script));
+    console.log('celAddScriptTag: added ', script);
     return script;
   };
 
