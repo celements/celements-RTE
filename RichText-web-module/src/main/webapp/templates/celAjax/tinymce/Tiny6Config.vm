@@ -44,7 +44,7 @@ $!services.rteconfig.setRteConfigHint("tinymce6")
 #end
 #set($jsService = $services.javascript)
 #set($extJsParam = $jsService.createDefaultExtJSParam())
-#set($celDynLoaderUrl="$extJsParam.setJsFile(':celDynJS/DynamicLoader/celLazyLoader.mjs').getJsFile().getFilepath()")
+#set($celDynLoaderUrl = "$services.celementsweb.getSkinFile(':celDynJS/DynamicLoader/celLazyLoader.mjs', 'file')")
 #set($content_js_fileURLs = $services.javascript.getRteContentJsFiles())
 ## file base link, file picker link
 #if(("$!xwiki.getSpacePreference('cel_centralfilebase')" != '') && ("$!xwiki.getSpacePreference('cel_centralfilebase')" != '-'))
