@@ -130,10 +130,10 @@ class CelRteAdaptor {
     console.trace('tinyMceSetupDoneHandler finish');
   }
 
-  #celAddScriptTag = (iframeDoc, head, tagname, src) => {
+  #celAddScriptTag = (iframeDoc, head, tagname, src, scriptType = 'text/javascript') => {
     const script = iframeDoc.createElement(tagname);
     script.src = src;
-    script.type = 'text/javascript';
+    script.type = scriptType;
     head.appendChild(script);
   };
 
@@ -142,8 +142,11 @@ class CelRteAdaptor {
     const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
     console.debug('celLoadScriptToIFrame add all JS files in content_js array',
       head, ed.settings.content_js);
-    this.#celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader);
-    (ed.settings.content_js || []).forEach(src => this.#celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));  
+    this.#celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader, 'module');
+    scriptTag.addEventListener('load', () => {
+      console.log('celDynLoader loaded');
+      (ed.settings.content_js || []).forEach(src => this.#celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));  
+    });
     console.debug("Injected content_js scripts into TinyMCE iframe:", ed.settings.content_js);
   }
 
