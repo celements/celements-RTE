@@ -171,6 +171,7 @@ $jsonBuilder.openArray("content_css")##
   $jsonBuilder.addValue($cssURL)
 #end
 $jsonBuilder.closeArray()##
+$jsonBuilder.addProperty("cel_dynloader", "$!jsService.includeExtJsFile($extJsParam.setJsFile(':celDynJS/DynamicLoader/celLazyLoader.mjs'))")##
 $jsonBuilder.openArray("content_js")##
 #foreach($jsURL in $content_js_fileURLs)
   $jsonBuilder.addValue($jsURL)
