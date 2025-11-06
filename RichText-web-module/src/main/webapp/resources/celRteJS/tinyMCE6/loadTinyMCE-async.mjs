@@ -132,8 +132,8 @@ class CelRteAdaptor {
 
   #celAddScriptTag = (iframeDoc, head, tagname, src, scriptType = 'text/javascript') => {
     const script = iframeDoc.createElement(tagname);
-    script.src = src;
-    script.type = scriptType;
+    script.setAttribute('src', src);
+    script.setAttribute('type', scriptType);
     head.appendChild(script);
   };
 
@@ -142,7 +142,7 @@ class CelRteAdaptor {
     const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
     console.debug('celLoadScriptToIFrame add all JS files in content_js array',
       head, ed.settings.content_js);
-    this.#celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader, 'module');
+    const scriptTag = this.#celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader, 'module');
     scriptTag.addEventListener('load', () => {
       console.log('celDynLoader loaded');
       (ed.settings.content_js || []).forEach(src => this.#celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));  
