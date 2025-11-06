@@ -21,7 +21,8 @@
 (function(window, undefined) {
   "use strict";
   
-  var tinyConfigLoaded = false;
+  let tinyConfigLoaded = false;
+  let tinyConfigObj = {};
   var editorCounter = 0;
 
   var initCelRTE4 = function() {
@@ -40,10 +41,10 @@
       method: 'post',
       parameters: params,
       onSuccess: function(transport) {
-        var tinyConfigJSON = transport.responseText;
+        const tinyConfigJSON = transport.responseText;
         console.log('tinymce4 config loaded: starting tiny');
         if (tinyConfigJSON.isJSON()) {
-          var tinyConfigObj = tinyConfigJSON.evalJSON();
+          tinyConfigObj = tinyConfigJSON.evalJSON();
           tinyConfigObj["setup"] = celSetupTinyMCE;
           console.debug('initCelRTE4: tinymce.init');
           tinymce.init(tinyConfigObj);
@@ -93,6 +94,7 @@
       [...editor.getElement().classList]
         .filter(cssClass => cssClass.startsWith('celEditorBody_'))
         .forEach(cssClass => editor.getBody().classList.add(cssClass));
+      celLoadScriptToIFrame(editor);
       $$('body')[0].fire('celRTE:finishedInit', {
         'editor' : editor
       });
@@ -100,6 +102,28 @@
     } catch (exp) {
       console.error('celFinishTinyMCEStart failed', event, exp);
     }
+  };
+
+  const celAddScriptTag = (iframeDoc, head, tagname, src, scriptType = 'text/javascript') => {
+    const script = iframeDoc.createElement(tagname);
+    script.setAttribute('src', src);
+    script.setAttribute('type', scriptType);
+    head.appendChild(script);
+    console.log('celAddScriptTag: added ', script);
+    return script;
+  };
+
+  const celLoadScriptToIFrame = (ed) => {
+    const iframeDoc = ed.getDoc();
+    const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+    console.debug('celLoadScriptToIFrame add all JS files in content_js array',
+      head, ed.settings.content_js);
+    const scriptTag = celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader, 'module');
+    scriptTag.addEventListener('load', () => {
+      console.log('celDynLoader loaded');
+      (ed.settings.content_js || []).forEach(src => celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));
+    });
+    console.debug("Injected content_js scripts into TinyMCE iframe:", ed.settings.content_js);
   };
 
   const lazyLoadTinyMCE = function(mceParentElem) {
