@@ -57,6 +57,9 @@ $!services.rteconfig.setRteConfigHint("tinymce4")
     #set($!devNull = $content_css_filenameURL.add("$!{cssObj.getCSS()}"))
   #end
 #end
+#set($jsService = $services.javascript)
+#set($extJsParam = $jsService.createDefaultExtJSParam())
+#set($celDynLoaderUrl="$!jsService.includeExtJsFile($extJsParam.setJsFile(':celDynJS/DynamicLoader/celLazyLoader.mjs'))")
 #set($content_js_fileURLs = $services.javascript.getRteContentJsFiles())
 ## file base link, file picker link
 #if(("$!xwiki.getSpacePreference('cel_centralfilebase')" != '') && ("$!xwiki.getSpacePreference('cel_centralfilebase')" != '-'))
@@ -171,7 +174,7 @@ $jsonBuilder.openArray("content_css")##
   $jsonBuilder.addValue($cssURL)
 #end
 $jsonBuilder.closeArray()##
-$jsonBuilder.addProperty("cel_dynloader", "$!services.javascript.includeExtJsFile($extJsParam.setJsFile(':celDynJS/DynamicLoader/celLazyLoader.mjs'))")##
+$jsonBuilder.addProperty("cel_dynloader", $celDynLoaderUrl)##
 $jsonBuilder.openArray("content_js")##
 #foreach($jsURL in $content_js_fileURLs)
   $jsonBuilder.addValue($jsURL)
