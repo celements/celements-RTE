@@ -69,7 +69,7 @@ class CelRteAdaptor {
   }
 
   async #getTinyReadyPromise(beforeTinyInitPromiseArray) {
-    console.trace('getTinyReadyPromise start');
+    console.debug('getTinyReadyPromise start');
     const tinyConfig = await this.#tinyConfigLoadedPromise;
     await Promise.all([
         this.#tinyConfigLoadedPromise,
@@ -127,7 +127,7 @@ class CelRteAdaptor {
         resolve(ed);
       });
     }));
-    console.trace('tinyMceSetupDoneHandler finish');
+    console.debug('tinyMceSetupDoneHandler finish');
   }
 
   #celAddScriptTag = (iframeDoc, head, tagname, src, scriptType = 'text/javascript') => {
@@ -151,7 +151,7 @@ class CelRteAdaptor {
   }
 
   #getUninitializedMceEditors(mceParentElem) {
-    console.trace('getUninitializedMceEditors: start', mceParentElem);
+    console.debug('getUninitializedMceEditors: start', mceParentElem);
     const mceEditorsToInit = [];
     for (const editorArea of mceParentElem.querySelectorAll(
         'textarea.mceEditor:not([data-cel-rte-state])')) {
@@ -162,11 +162,11 @@ class CelRteAdaptor {
         console.debug('getUninitializedMceEditors: found new editorArea', editorArea.id);
         mceEditorsToInit.push(editorArea);
       } else {
-        console.trace('getUninitializedMceEditors: skip already initialized rte',
+        console.debug('getUninitializedMceEditors: skip already initialized rte',
           editorArea.id);
       }
     }
-    console.trace('getUninitializedMceEditors: returns', mceParentElem, mceEditorsToInit);
+    console.debug('getUninitializedMceEditors: returns', mceParentElem, mceEditorsToInit);
     return mceEditorsToInit;
   }
 
@@ -182,7 +182,7 @@ class CelRteAdaptor {
           'options' : tinyConfig
         });
       }
-      console.trace('lazyLoadTinyMCE: finish', mceParentElem);
+      console.debug('lazyLoadTinyMCE: finish', mceParentElem);
     } catch (exp) {
       console.error("lazyLoadTinyMCE failed. ", exp);
     }
@@ -223,9 +223,9 @@ class TinyMceLazyInitializer {
   constructor(theCelRteAdaptor) {
     this.#celRteAdaptor = theCelRteAdaptor;
   }
-  
+
   initObserver() {
-    console.trace("TinyMceLazyInitializer.initObserver: start initObserver");
+    console.debug("TinyMceLazyInitializer.initObserver: start initObserver");
     this.#observer = new MutationObserver(mutationList =>
       mutationList.flatMap(mutation => [...mutation.addedNodes])
       .filter(newNode => (newNode.nodeType === Node.ELEMENT_NODE))
@@ -248,16 +248,16 @@ class TabEditorTinyPlugin {
   }  
 
   delayedEditorOpeningPromiseHandler(event) {
-    console.trace('delayedEditorOpeningPromiseHandler: start', event.memo);
+    console.debug('delayedEditorOpeningPromiseHandler: start', event.memo);
     const mceParentElem = event.memo.tabBodyId || "tabMenuPanel";
     const editorFinishPromise = this.#rteAdaptor.editorInitPromises;
     event.memo.beforePromises.push(editorFinishPromise);
-    console.trace('delayedEditorOpeningPromiseHandler: end', mceParentElem);
+    console.debug('delayedEditorOpeningPromiseHandler: end', mceParentElem);
   }
 
   async #initTabEditorIfLoaded() {
     try {
-      console.trace('#initTabEditorIfLoaded start');
+      console.debug('#initTabEditorIfLoaded start');
       await this.#afterTabEditorInitializedPromise();
       console.log('initTabEditorIfLoaded: TabEditor detected, prepare loading init TabEditor.');
       window.getCelementsTabEditor().celObserve('tabedit:beforeDisplaying',
