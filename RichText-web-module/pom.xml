@@ -54,7 +54,7 @@
     <plugins>
       <plugin>
         <groupId>com.jarslab.maven</groupId>
-	<artifactId>babel-maven-plugin</artifactId>
+        <artifactId>babel-maven-plugin</artifactId>
         <executions>
           <execution>
             <id>js-transpile</id>
