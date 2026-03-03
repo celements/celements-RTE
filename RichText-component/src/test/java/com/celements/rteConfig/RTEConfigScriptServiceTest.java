@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.python.google.common.base.Strings;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
@@ -16,6 +15,7 @@ import com.celements.common.test.AbstractComponentTest;
 import com.celements.emptycheck.internal.IDefaultEmptyDocStrategyRole;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.reference.RefBuilder;
+import com.google.common.base.Strings;
 import com.xpn.xwiki.web.Utils;
 
 public class RTEConfigScriptServiceTest extends AbstractComponentTest {
