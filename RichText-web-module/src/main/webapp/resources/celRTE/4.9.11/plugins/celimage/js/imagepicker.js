@@ -263,7 +263,6 @@ var loadAttachmentListCallback = function(attList, insertBottom, duplicateCheck,
         'src' : thmbImgSrc,
         'loading' : 'lazy',
       });
-      consle.log('img attributes: ', imgThmb, imgThmb.getAttribute('loading'));
       var imgContainerDiv = new Element('div', {
         'class' : cssClasses
       }).update(imgThmb);
