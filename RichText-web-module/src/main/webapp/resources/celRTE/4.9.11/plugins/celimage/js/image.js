@@ -464,6 +464,7 @@ var CelImageDialog = {
       lang : nl.lang.value,
       usemap : nl.usemap.value,
       longdesc : nl.longdesc.value,
+      loading : 'lazy'
     });
 
     var cssClassPrefix = 'celanim';
