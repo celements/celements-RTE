@@ -238,7 +238,7 @@ public class TinyMce4Config implements RteConfigRole {
     LOGGER.info("generateURL with default {}. Result {}", defaultVers, cfgValue);
     String rteUrlLink = ":celRTE/" + cfgValue + "/tinymce.min.js";
     return new AttachmentURLCommand()
-        .getAttachmentURL(rteUrlLink, null, (String) null)
+        .getAttachmentURL(rteUrlLink, "file", (String) null)
         .map(UriComponents::toUriString)
         .orElse(rteUrlLink);
   }
