@@ -78,7 +78,7 @@ public class TinyMce4Config implements RteConfigRole {
       + "+a[href|class|target|onclick|name|id|title|rel|hreflang],br,i/em,#p[style|class|name|id],"
       + "#h?[align<center?justify?left?right|class|style|id],-span[class|style|id|title],"
       + "textformat[blockindent|indent|leading|leftmargin|rightmargin|tabstops],sub[class],"
-      + "sup[class],img[width|height|class|align|style|src|border=0|alt|id|title|usemap],"
+      + "sup[class],img[width|height|class|align|style|src|border=0|alt|id|title|usemap|loading=lazy],"
       + "table[align<center?left?right|bgcolor|border|cellpadding|cellspacing|class|height|width"
       + "|style|id|title],"
       + "tbody[align<center?char?justify?left?right|class|valign<baseline?bottom?middle?top],"
