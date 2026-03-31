@@ -260,7 +260,8 @@ var loadAttachmentListCallback = function(attList, insertBottom, duplicateCheck,
       var thmbImgSrc = (decodeURI(imgElem.src) + '?celheight=' + imagePickerMaxDimension
           + '&celwidth=' + imagePickerMaxDimension);
       var imgThmb = new Element('img', {
-        'src' : thmbImgSrc
+        'src' : thmbImgSrc,
+        'loading' : 'lazy',
       });
       var imgContainerDiv = new Element('div', {
         'class' : cssClasses
