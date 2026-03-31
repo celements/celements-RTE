@@ -134,11 +134,15 @@ class CelRteAdaptor {
     script.setAttribute('src', src);
     script.setAttribute('type', scriptType);
     head.appendChild(script);
+    console.trace('#celAddScriptTag: added ', script);
+    return script;
   };
 
   #loadScriptToIFrame(ed) {
     const iframeDoc = ed.getDoc();
     const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+    console.debug('#loadScriptToIFrame add all JS files in content_js array',
+      head, ed.options.content_js);
     const scriptTag = this.#celAddScriptTag(iframeDoc, head, 'script', ed.options.cel_dynloader, 'module');
     scriptTag.addEventListener('load', () => {
       console.log('celDynLoader loaded');
