@@ -72,7 +72,6 @@ class CelRteAdaptor {
     console.debug('getTinyReadyPromise start');
     const tinyConfig = await this.#tinyConfigLoadedPromise;
     await Promise.all([
-        this.#tinyConfigLoadedPromise,
         this.#addTinyMceScript(tinyConfig),
         ...beforeTinyInitPromiseArray
     ]);
@@ -140,14 +139,12 @@ class CelRteAdaptor {
   #loadScriptToIFrame(ed) {
     const iframeDoc = ed.getDoc();
     const head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
-    console.debug('celLoadScriptToIFrame add all JS files in content_js array',
-      head, ed.settings.content_js);
-    const scriptTag = this.#celAddScriptTag(iframeDoc, head, 'script', ed.settings.cel_dynloader, 'module');
+    const scriptTag = this.#celAddScriptTag(iframeDoc, head, 'script', ed.options.cel_dynloader, 'module');
     scriptTag.addEventListener('load', () => {
       console.log('celDynLoader loaded');
-      (ed.settings.content_js || []).forEach(src => this.#celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));  
+      (ed.options.content_js || []).forEach(src => this.#celAddScriptTag(iframeDoc, head, 'cel-lazy-load-js', src));  
     });
-    console.debug("Injected content_js scripts into TinyMCE iframe:", ed.settings.content_js);
+    console.debug("Injected content_js scripts into TinyMCE iframe:", ed.options.content_js);
   }
 
   #getUninitializedMceEditors(mceParentElem) {
