@@ -8,7 +8,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>celements-richtext</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1</version>
   <name>Celements RichText</name>
   <licenses>
     <license>
@@ -158,6 +158,6 @@
     <connection>scm:git:git://github.com/celements/celements-RTE</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-RTE.git</developerConnection>
     <url>https://github.com/celements/celements-RTE/RichText-component</url>
-    <tag>HEAD</tag>
+    <tag>celements-richtext-7.1</tag>
   </scm>
 </project>
